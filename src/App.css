@@ -1,0 +1,7 @@
+/* Arquivo CSS global ou no componente principal da sua aplicação */
+body, html {
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+  }
+  

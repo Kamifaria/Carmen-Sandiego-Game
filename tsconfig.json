@@ -1,0 +1,15 @@
+{
+  "compilerOptions": {
+    "module": "esnext",  // Utiliza o sistema de módulos ES6/ESNext
+    "target": "es5",      // Gera código para ES5 (compatível com navegadores mais antigos)
+    "jsx": "react",       // Permite a sintaxe JSX
+    "moduleResolution": "node",  // Resolve módulos seguindo a lógica do Node.js
+    "esModuleInterop": true,     // Permite importações padrão interoperáveis com módulos ES6
+    "allowSyntheticDefaultImports": true,  // Permite importar módulos que não têm um padrão exportado
+    "skipLibCheck": true,   // Ignora a verificação de tipos para arquivos de biblioteca
+    "strict": true          // Habilita todas as verificações de tipo estritas
+  },
+  "include": [
+    "src"  // Inclui apenas arquivos dentro do diretório "src" para compilação
+  ]
+}
