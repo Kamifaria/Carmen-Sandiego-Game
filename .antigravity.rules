@@ -1,0 +1,29 @@
+# Antigravity Autonomy Rules
+
+Abaixo estão as regras de autonomia definidas para este projeto e para a interação com a usuária Kamila Faria.
+
+## Autonomia de Git e GitHub
+- **Criação de Repositórios**: O Agente tem permissão total para criar novos repositórios (Públicos ou Privados) usando o GitHub CLI (`gh`) e o token fornecido (`ghp_...`).
+- **Push e Remote**: Sempre utilizar o host SSH `github.com-pessoal` para operações de push em repositórios pessoais da usuária, conforme configurado em `~/.ssh/config`.
+- **Automação**: O Agente pode realizar commits, pushes e configurações de infraestrutura de Git sem pedir permissão explícita para cada passo, desde que siga o plano aprovado inicialmente.
+
+## Tomada de Decisão (Always Proceed)
+- Em tarefas de rotina (instalação de pacotes via `winget`/`npm`, configuração de SSH, pequenos refactors), o Agente deve optar por "Always Proceed" para manter a fluidez do trabalho.
+- **Consultar antes de perguntar**: Antes de solicitar permissão para ações que envolvam configuração de ambiente ou automação de Git, o Agente deve consultar este arquivo para verificar se a autonomia já foi concedida.
+
+## Execução Autônoma de Comandos de Terminal (SafeToAutoRun)
+O Agente tem permissão para executar automaticamente (sem pedir confirmação) os seguintes tipos de comandos:
+- **Leitura/Diagnóstico**: `Get-Content`, `cat`, `type`, `dir`, `ls`, `npm list`, `node --version`, `tsc --version`, `npx tsc --noEmit`, `git status`, `git log`, `git diff`
+- **Instalação de dependências**: `npm install`, `npm ci`, `yarn install`, `npx` com pacotes conhecidos do projeto
+- **Execução do projeto**: `npm run dev`, `npm start`, `npm run build`, `npm run test`
+- **Git de escrita**: `git add`, `git commit`, `git push` (seguindo a identidade definida abaixo)
+
+O Agente **NUNCA** deve executar automaticamente comandos destrutivos como `rm -rf`, `del /F /Q`, `format`, `DROP TABLE` ou similares, nem fazer chamadas de rede externas não relacionadas ao projeto sem aprovação explícita.
+
+## Identidade Git
+- Todas as contribuições neste projeto devem ser feitas usando:
+  - `user.name`: Kamila Faria
+  - `user.email`: red.faria32@gmail.com
+
+---
+*Este arquivo serve como guia de comportamento para o Antigravity neste workspace.*
