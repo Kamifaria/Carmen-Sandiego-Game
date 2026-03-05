@@ -7,6 +7,15 @@ const app = express();
 app.use(cors());
 app.use(bodyParser.json());
 
+// Middleware para Limpeza de Cache (Force Refresh)
+app.use((req, res, next) => {
+  res.set('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+  res.set('Pragma', 'no-cache');
+  res.set('Expires', '0');
+  res.set('Surrogate-Control', 'no-store');
+  next();
+});
+
 // Banco de dados falso (memória)
 const mockUsers = [
   { username: 'kami1', email: 'kami@email.com', password: 'senha123' }

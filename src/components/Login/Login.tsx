@@ -23,15 +23,29 @@ const Login = () => {
     e.preventDefault();
     try {
       const response = await api.post('/api/login', { username, password });
-      if (response.data.message === 'Login bem-sucedido.') {
-        setUser({ username });
-        localStorage.setItem('token', response.data.token);
-        navigate('/home');
+
+      // Verificando o retorno "Login successful" conforme solicitado
+      if (response.data.message === 'Login successful') {
+        const userData = response.data.user;
+
+        // Persistência: Salvando dados do usuário no localStorage
+        localStorage.setItem('userId', userData.id);
+        localStorage.setItem('username', userData.username);
+
+        // Atualizando o contexto global
+        setUser({ username: userData.username });
+
+        // Transição de tela para o jogo
+        navigate('/game');
+
+        // Limpeza de Cache: Recarrega se necessário (opcional em SPA, mas solicitado)
+        // window.location.reload(); 
       } else {
-        setError('Incorrect username or password.');
+        setError('Usuário ou senha incorretos.');
       }
-    } catch {
-      setError('Incorrect username or password.');
+    } catch (err) {
+      console.error('Erro no login:', err);
+      setError('Falha na autenticação. Verifique suas credenciais.');
     }
   };
 

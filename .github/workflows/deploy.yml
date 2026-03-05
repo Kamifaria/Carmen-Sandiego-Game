@@ -1,0 +1,84 @@
+name: Carmen Sandiego CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build-and-lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build Frontend
+        run: npm run build
+        env:
+          CI: false # Prevents warnings from being treated as errors during build
+
+      - name: Validate Backend Syntax
+        run: node --check server_remote_fix.js
+
+  deploy-dev:
+    needs: build-and-lint
+    if: github.ref == 'refs/heads/develop'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy to Development VPS
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          password: ${{ secrets.SSH_PASSWORD }}
+          script: |
+            cd /opt/carmen-game/
+            git checkout develop
+            git pull origin develop
+            
+            # Garantia de Estrutura para evitar ENOENT
+            mkdir -p public
+            # Caso existam arquivos soltos, move para a pasta public
+            [ -f index.html ] && mv index.html public/
+            [ -f main.js ] && mv main.js public/
+            [ -f style.css ] && mv style.css public/
+            
+            # Docker Orchestration
+            docker compose down
+            docker compose up -d --build
+
+  deploy-prod:
+    needs: build-and-lint
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy to Production VPS
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          password: ${{ secrets.SSH_PASSWORD }}
+          script: |
+            cd /opt/carmen-game/
+            git checkout main
+            git pull origin main
+            
+            # Garantia de Estrutura (mesma lógica de dev)
+            mkdir -p public
+            [ -f index.html ] && mv index.html public/
+            [ -f main.js ] && mv main.js public/
+            [ -f style.css ] && mv style.css public/
+            
+            # Docker Orchestration
+            docker compose down
+            docker compose up -d --build
