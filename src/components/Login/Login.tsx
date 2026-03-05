@@ -9,6 +9,7 @@ const Login = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
   const { setUser } = useAuth();
   const navigate = useNavigate();
 
@@ -21,31 +22,26 @@ const Login = () => {
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
+    setIsLoading(true);
+    setError('');
+
     try {
       const response = await api.post('/api/login', { username, password });
 
-      // Verificando o retorno "Login successful" conforme solicitado
       if (response.data.message === 'Login successful') {
         const userData = response.data.user;
-
-        // Persistência: Salvando dados do usuário no localStorage
         localStorage.setItem('userId', userData.id);
         localStorage.setItem('username', userData.username);
-
-        // Atualizando o contexto global
         setUser({ username: userData.username });
-
-        // Transição de tela para o jogo
         navigate('/game');
-
-        // Limpeza de Cache: Recarrega se necessário (opcional em SPA, mas solicitado)
-        // window.location.reload(); 
       } else {
         setError('Usuário ou senha incorretos.');
       }
     } catch (err) {
       console.error('Erro no login:', err);
       setError('Falha na autenticação. Verifique suas credenciais.');
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -73,7 +69,12 @@ const Login = () => {
               required
             />
           </div>
-          <input type="submit" value="Login" />
+          <input
+            type="submit"
+            value={isLoading ? "Carregando..." : "Login"}
+            disabled={isLoading}
+            style={{ opacity: isLoading ? 0.7 : 1, cursor: isLoading ? 'not-allowed' : 'pointer' }}
+          />
           {error && <ErrorMessage className="active">{error}</ErrorMessage>}
         </form>
         <div className="signup-text">

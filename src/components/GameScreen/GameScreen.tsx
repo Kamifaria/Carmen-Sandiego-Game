@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback, useRef, useMemo } from "react";
+import { useNavigate } from "react-router-dom";
 import Typist from "react-typist";
 import "react-typist/dist/Typist.css";
 
@@ -29,7 +30,18 @@ import {
 } from "./GameScreen.styles";
 
 const GameScreen = () => {
-  const { user } = useAuth();
+  const { user, setUser } = useAuth();
+  const navigate = useNavigate();
+
+  // Proteção de Rota: Redireciona para o login se não houver usuário logado
+  useEffect(() => {
+    const storedUser = localStorage.getItem('username');
+    if (!storedUser && !user) {
+      navigate('/login');
+    } else if (storedUser && !user) {
+      setUser({ username: storedUser });
+    }
+  }, [user, setUser, navigate]);
   const [step, setStep] = useState(0);
   const [messagesToShow, setMessagesToShow] = useState<string[]>([]);
   const [messagesDisplayed, setMessagesDisplayed] = useState<string[]>([]);
@@ -125,23 +137,23 @@ const GameScreen = () => {
         <LeftColumn>
           {showLeftColumn && (
             <TypingArea>
-  <MessageContainer>
-    {messagesToShow.slice(0, -1).map((message, index) => (
-      <TypingAreaItem key={index}>{message}</TypingAreaItem>
-    ))}
-    <Typist
-      key={step.toString()}
-      cursor={{ show: true, blink: true, element: "|" }}
-      onTypingDone={() => setReadyForNext(true)}
-      avgTypingDelay={50}
-    >
-      {messagesToShow[messagesToShow.length - 1]}
-    </Typist>
-  </MessageContainer>
+              <MessageContainer>
+                {messagesToShow.slice(0, -1).map((message, index) => (
+                  <TypingAreaItem key={index}>{message}</TypingAreaItem>
+                ))}
+                <Typist
+                  key={step.toString()}
+                  cursor={{ show: true, blink: true, element: "|" }}
+                  onTypingDone={() => setReadyForNext(true)}
+                  avgTypingDelay={50}
+                >
+                  {messagesToShow[messagesToShow.length - 1]}
+                </Typist>
+              </MessageContainer>
 
-  {/* Máquina de escrever no fim da coluna esquerda */}
-  <TypewriterContainer isTyping={!readyForNext} />
-</TypingArea>
+              {/* Máquina de escrever no fim da coluna esquerda */}
+              <TypewriterContainer isTyping={!readyForNext} />
+            </TypingArea>
 
           )}
         </LeftColumn>
