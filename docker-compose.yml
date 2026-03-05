@@ -3,22 +3,12 @@ services:
     build: .
     ports:
       - "${APP_PORT:-3000}:3000"
-    depends_on:
-      - gv-db
+    networks:
+      - carmen_network
     env_file:
       - .env
     restart: always
 
-  gv-db:
-    image: postgres:15-alpine
-    environment:
-      POSTGRES_USER: ${DB_USER:-postgres}
-      POSTGRES_PASSWORD: ${DB_PASSWORD:-mysecretpassword}
-      POSTGRES_DB: ${DB_NAME:-postgres}
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-    restart: always
-
-volumes:
-  postgres_data:
+networks:
+  carmen_network:
     external: true
