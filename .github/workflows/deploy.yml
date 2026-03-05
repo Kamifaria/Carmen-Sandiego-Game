@@ -2,9 +2,9 @@ name: Carmen Sandiego CI/CD Pipeline
 
 on:
   push:
-    branches: [ main, develop ]
+    branches: [main, develop]
   pull_request:
-    branches: [ main ]
+    branches: [main]
 
 jobs:
   build-and-lint:
@@ -16,8 +16,8 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '18'
-          cache: 'npm'
+          node-version: "18"
+          cache: "npm"
 
       - name: Install dependencies
         run: npm install
@@ -42,20 +42,30 @@ jobs:
           username: ${{ secrets.SSH_USER }}
           password: ${{ secrets.SSH_PASSWORD }}
           script: |
-            cd /opt/carmen-game/
-            git checkout develop
-            git pull origin develop
-            
-            # Garantia de Estrutura para evitar ENOENT
-            mkdir -p public
-            # Caso existam arquivos soltos, move para a pasta public
-            [ -f index.html ] && mv index.html public/
-            [ -f main.js ] && mv main.js public/
-            [ -f style.css ] && mv style.css public/
-            
+            mkdir -p /opt/carmen-game/dev
+            cd /opt/carmen-game/dev
+
+            # Setup Git if not exists
+            if [ ! -d .git ]; then
+              git clone -b develop https://github.com/Kamifaria/Carmen-Sandiego-Game.git .
+            else
+              git checkout develop
+              git pull origin develop
+            fi
+
+            # Create .env for Dev
+            echo "APP_PORT=8082" > .env
+            echo "DB_USER=postgres" >> .env
+            echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> .env
+            echo "DB_NAME=postgres" >> .env
+
             # Docker Orchestration
             docker compose down
             docker compose up -d --build
+
+            # Health Check
+            sleep 10
+            curl -f http://localhost:8082 || (docker compose logs && exit 1)
 
   deploy-prod:
     needs: build-and-lint
@@ -69,16 +79,27 @@ jobs:
           username: ${{ secrets.SSH_USER }}
           password: ${{ secrets.SSH_PASSWORD }}
           script: |
-            cd /opt/carmen-game/
-            git checkout main
-            git pull origin main
-            
-            # Garantia de Estrutura (mesma lógica de dev)
-            mkdir -p public
-            [ -f index.html ] && mv index.html public/
-            [ -f main.js ] && mv main.js public/
-            [ -f style.css ] && mv style.css public/
-            
+            mkdir -p /opt/carmen-game/prod
+            cd /opt/carmen-game/prod
+
+            # Setup Git if not exists
+            if [ ! -d .git ]; then
+              git clone -b main https://github.com/Kamifaria/Carmen-Sandiego-Game.git .
+            else
+              git checkout main
+              git pull origin main
+            fi
+
+            # Create .env for Prod
+            echo "APP_PORT=8081" > .env
+            echo "DB_USER=postgres" >> .env
+            echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> .env
+            echo "DB_NAME=postgres" >> .env
+
             # Docker Orchestration
             docker compose down
             docker compose up -d --build
+
+            # Health Check
+            sleep 10
+            curl -f http://localhost:8081 || (docker compose logs && exit 1)

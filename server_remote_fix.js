@@ -5,13 +5,13 @@ const path = require('path');
 const app = express();
 app.use(express.json());
 
-// Conexão ao Banco
+// Conexão ao Banco via Variáveis de Ambiente
 const pool = new Pool({
-    host: 'gv-db',
-    user: 'postgres',
-    password: 'mysecretpassword',
-    database: 'postgres',
-    port: 5432
+    host: process.env.DB_HOST || 'gv-db',
+    user: process.env.DB_USER || 'postgres',
+    password: process.env.DB_PASSWORD || 'mysecretpassword',
+    database: process.env.DB_NAME || 'postgres',
+    port: process.env.DB_PORT || 5432
 });
 
 // Middleware para Limpeza de Cache (Force Refresh)
@@ -68,6 +68,7 @@ app.get('*', (req, res) => {
 });
 
 // Escuta de Porta
-app.listen(3000, () => {
-    console.log('🚀 Servidor pronto na porta 3000');
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+    console.log(`🚀 Servidor pronto na porta ${PORT}`);
 });
