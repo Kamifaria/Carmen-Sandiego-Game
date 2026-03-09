@@ -62,6 +62,38 @@ app.post('/api/login', async (req, res) => {
     }
 });
 
+// Rota de Registro
+app.post('/api/register', async (req, res) => {
+    const { username, email, password, confirmPassword } = req.body;
+
+    if (!username || !email || !password) {
+        return res.status(400).json({ message: 'Todos os campos são obrigatórios' });
+    }
+
+    if (password !== confirmPassword) {
+        return res.status(400).json({ message: 'As senhas não coincidem' });
+    }
+
+    try {
+        // Verifica se usuário já existe
+        const userExists = await pool.query('SELECT id FROM users WHERE username = $1 OR email = $2', [username, email]);
+        if (userExists.rows.length > 0) {
+            return res.status(400).json({ message: 'Usuário ou e-mail já estão em uso' });
+        }
+
+        // Insere o novo usuário
+        const result = await pool.query(
+            'INSERT INTO users (username, email, password) VALUES ($1, $2, $3) RETURNING id',
+            [username, email, password]
+        );
+
+        return res.status(201).json({ message: 'Registration successful!' });
+    } catch (err) {
+        console.error('Database error on register:', err);
+        return res.status(500).json({ message: 'Erro interno no servidor' });
+    }
+});
+
 // Fallback SPA - qualquer rota não-API retorna o index.html
 app.get('*', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'index.html'));

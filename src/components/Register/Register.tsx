@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Container, GlobalStyle, Message } from './Register.styles';
+import api from '../../services/api';
 
 const Register: React.FC = () => {
   const [username, setUsername] = useState('');
@@ -15,33 +16,20 @@ const Register: React.FC = () => {
     e.preventDefault();
 
     try {
-      const response = await fetch('http://localhost:3001/register', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ username, email, password, confirmPassword }),
-      });
+      const response = await api.post('/api/register', { username, email, password, confirmPassword });
 
-      if (response.ok) {
-        const result = await response.json();
-        if (result && result.message) {
-          setMessage(result.message);
-          setIsError(false);
-          setTimeout(() => navigate('/login'), 2000);
-        } else {
-          console.error('Resposta do servidor não contém mensagem esperada:', result);
-        }
-      } else if (response.status === 400) {
-        const errorResponse = await response.json();
-        setMessage(errorResponse.message);
-        setIsError(true);
-      } else {
-        console.error('Falha ao enviar solicitação de registro:', response.status);
+      if (response.status === 201) {
+        setMessage(response.data.message || 'Registration successful!');
+        setIsError(false);
+        setTimeout(() => navigate('/login'), 2000);
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Erro ao tentar registrar:', error);
-      setMessage('Erro ao tentar registrar');
+      if (error.response && error.response.data && error.response.data.message) {
+        setMessage(error.response.data.message);
+      } else {
+        setMessage('Erro ao tentar registrar');
+      }
       setIsError(true);
     }
   };
