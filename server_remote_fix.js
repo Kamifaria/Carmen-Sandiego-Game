@@ -24,7 +24,7 @@ app.use((req, res, next) => {
 });
 
 // Serviço Estático com Cache desabilitado para arquivos HTML/JS críticos
-app.use(express.static(path.join(__dirname, 'public'), {
+app.use(express.static(path.join(__dirname, 'build'), {
     etag: false,
     maxAge: '0',
     setHeaders: (res, path) => {
@@ -82,7 +82,7 @@ app.post('/api/register', async (req, res) => {
         }
 
         // Insere o novo usuário
-        const result = await pool.query(
+        await pool.query(
             'INSERT INTO users (username, email, password) VALUES ($1, $2, $3) RETURNING id',
             [username, email, password]
         );
@@ -96,7 +96,7 @@ app.post('/api/register', async (req, res) => {
 
 // Fallback SPA - qualquer rota não-API retorna o index.html
 app.get('*', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'index.html'));
+    res.sendFile(path.join(__dirname, 'build', 'index.html'));
 });
 
 // Escuta de Porta
