@@ -134,7 +134,7 @@ export const trupeiros: Trupe[] = [
     imagem: "https://pm1.aminoapps.com/7273/b3bb3927665063bad6820f6566f0ad17dd2e72d9r1-210-240v2_00.jpg",
   },
   {
-    nome: "Carmen Sandiego",
+    nome: "Global View",
     sexo: "Feminino",
     hobby: "Tenis",
     cabelo: "Ruivo",

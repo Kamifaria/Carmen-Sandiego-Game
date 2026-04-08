@@ -8,9 +8,7 @@ import { pickRandomLocation, LocationData } from "../../utils/localUtils";
 import { pickRandomArtefact } from "../../utils/artefactsUtils";
 import { trupeiros } from "../../utils/trupeUtils";
 
-import MapView from "../MapView/MapView";
 import SearchOptions from "../SearchOptions/SearchOptions";
-import CluesComputer from "../CluesComputer/CluesComputer";
 import HeaderComponent from "../Header/Header";
 import Button from "../Button/Button";
 
@@ -46,11 +44,10 @@ const GameScreen = () => {
   const [messagesToShow, setMessagesToShow] = useState<string[]>([]);
   const [messagesDisplayed, setMessagesDisplayed] = useState<string[]>([]);
   const [readyForNext, setReadyForNext] = useState(true);
-  const [isTyping, setIsTyping] = useState(false);
   const [bottomMessage, setBottomMessage] = useState("");
   const [rankAtual, setRankAtual] = useState("Novato");
   const [casesResolved] = useState(0);
-  const [currentLocation, setCurrentLocation] = useState<LocationData>(pickRandomLocation());
+  const [currentLocation] = useState<LocationData>(pickRandomLocation());
   const [startedArtefact, setStartedArtefact] = useState<string>("");
   const [suspectGender, setSuspectGender] = useState<string>("");
   const [showButtons, setShowButtons] = useState(false);
@@ -89,7 +86,6 @@ const GameScreen = () => {
     setMessagesToShow((prev) => [...prev, newMessage]);
     setStep((prev) => prev + 1);
     setReadyForNext(false);
-    setIsTyping(true);
     setBottomMessage("");
   }, [readyForNext, step, messages, suspectGender, user?.username, rankAtual, currentLocation.name, startedArtefact, messagesDisplayed]);
 
