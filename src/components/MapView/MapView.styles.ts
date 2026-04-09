@@ -53,3 +53,17 @@ export const Line = styled.div<{ startX: number; startY: number; endX: number; e
   transform: rotate(${props => Math.atan2(props.endY - props.startY, props.endX - props.startX)}rad);
   transform-origin: 0 0;
 `;
+
+export const PlaneIcon = styled.div<{ angle: number }>`
+  position: absolute;
+  width: 40px;
+  height: 40px;
+  background-image: url('https://cdn-icons-png.flaticon.com/512/3135/3135715.png');
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  transform: translate(-50%, -50%) rotate(${props => props.angle}rad);
+  transition: top 2s ease-in-out, left 2s ease-in-out;
+  z-index: 10;
+  filter: invert(1); /* makes the black plane icon white */
+`;
