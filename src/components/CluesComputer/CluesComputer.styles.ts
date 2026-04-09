@@ -85,16 +85,28 @@ export const SuspectsGallery = styled.div`
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
+  align-items: flex-start;
   overflow-y: auto;
-  gap: 15px;
+  gap: 20px;
   margin-top: 20px;
-  padding: 15px;
+  padding: 20px;
   width: 100%;
-  max-height: 250px;
+  max-height: 60vh;
   background-color: #222;
   border: 2px dashed #fcd116;
   border-radius: 5px;
   box-sizing: border-box;
+
+  /* Custom scrollbar for better look */
+  &::-webkit-scrollbar {
+    width: 10px;
+  }
+  &::-webkit-scrollbar-track {
+    background: #111;
+  }
+  &::-webkit-scrollbar-thumb {
+    background: #fcd116;
+  }
 `;
 
 export const SuspectCard = styled.div<{ $isWarrant: boolean }>`
@@ -102,16 +114,16 @@ export const SuspectCard = styled.div<{ $isWarrant: boolean }>`
   display: flex;
   flex-direction: column;
   align-items: center;
-  width: 110px;
+  width: 140px;
   background-color: #f4e8c1;
-  border: 1px solid #000;
-  padding: 5px;
-  box-shadow: 2px 2px 5px rgba(0,0,0,0.5);
+  border: 2px solid #000;
+  padding: 10px;
+  box-shadow: 4px 4px 10px rgba(0,0,0,0.6);
   font-family: "Courier New", Courier, monospace;
   
   .photo {
-    width: 100px;
-    height: 100px;
+    width: 120px;
+    height: 120px;
     object-fit: cover;
     border: 2px solid black;
     filter: sepia(0.6) contrast(1.2) grayscale(0.5); 
@@ -119,9 +131,9 @@ export const SuspectCard = styled.div<{ $isWarrant: boolean }>`
 
   .name {
     color: black;
-    font-size: 0.9rem;
+    font-size: 1.1rem;
     font-weight: bold;
-    margin-top: 5px;
+    margin-top: 10px;
     text-align: center;
     text-transform: uppercase;
   }
@@ -129,13 +141,13 @@ export const SuspectCard = styled.div<{ $isWarrant: boolean }>`
   .stamp {
     position: absolute;
     color: red;
-    border: 3px solid red;
+    border: 4px solid red;
     transform: rotate(-15deg);
-    font-size: 1.2rem;
+    font-size: 1.5rem;
     font-weight: bold;
-    top: 30px;
-    background: rgba(255,255,255,0.8);
-    padding: 2px;
+    top: 40px;
+    background: rgba(255,255,255,0.85);
+    padding: 4px;
     z-index: 2;
     display: ${props => props.$isWarrant ? 'block' : 'none'};
   }

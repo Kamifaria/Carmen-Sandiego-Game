@@ -15,9 +15,10 @@ export const StyledGameScreen = styled.div`
 export const ScreenWrapper = styled.div`
   display: flex;
   align-items: flex-start;
-  width: 60%;
+  width: 90%;
+  max-width: 1200px;
   height: calc(100% - 40px);
-  max-height: 70vh;
+  max-height: 85vh;
   background-color: black;
   border: 6px solid grey;
   overflow: hidden;
@@ -26,6 +27,7 @@ export const ScreenWrapper = styled.div`
 export const LeftColumn = styled.div`
   position: relative;
   flex: 1;
+  max-width: 400px; /* give it a fixed max width so it doesn't squish right column */
   width: 100%;
   height: 100%;
   display: flex;
@@ -47,18 +49,22 @@ export const RightColumn = styled.div`
   flex-direction: column;
   align-items: center;
   justify-content: space-between;
-  width: 50%;
+  flex: 1; /* Automatically expands to full width when LeftColumn hides */
   height: 100%;
   background-color: black;
   border-left: 2px solid grey;
   color: white;
 `;
 
-export const RightColumnDescription = styled.p<{ isVisible: boolean }>`
-  font-family: "Pixelify Sans";
-  font-size: 2.5rem;
+export const RightColumnDescription = styled.div<{ isVisible: boolean }>`
+  font-family: "Pixelify Sans", sans-serif;
+  font-size: 1.5rem;
+  line-height: 1.5;
   text-align: start;
-  visibility: ${({ isVisible }) => (isVisible ? "visible" : "hidden")};
+  width: 100%;
+  padding: 10px 20px;
+  box-sizing: border-box;
+  display: ${({ isVisible }) => (isVisible ? "block" : "none")}; 
   position: relative;
   z-index: 1;
 `;
@@ -75,6 +81,7 @@ export const BottomSection = styled.div`
   font-family: "Pixelify Sans", sans-serif;
   font-size: 2rem;
   margin-top: auto;
+  z-index: 5;
 `;
 
 export const CluesComputerWrapper = styled.div`
@@ -88,6 +95,8 @@ export const CluesComputerWrapper = styled.div`
 
 export const OptionsContainer = styled.div<{ isVisible: boolean }>`
   position: absolute;
+  top: 0;
+  left: 0;
   width: 100%;
   height: 80%;
   display: ${({ isVisible }) => (isVisible ? "flex" : "none")};
@@ -95,8 +104,7 @@ export const OptionsContainer = styled.div<{ isVisible: boolean }>`
   align-items: center;
   justify-content: flex-start;
   background-color: black;
-  border-top: 2px solid grey;
-  z-index: 2;
+  z-index: 10; /* high z-index to cover the description */
 `;
 
 export const SubHeader = styled.div`
@@ -116,12 +124,13 @@ export const TypingArea = styled.div`
   width: 100%;
   background-color: #f8f8f8;
   font-family: "Pixelify Sans", sans-serif;
-  font-size: 1.95rem;
+  font-size: 1.3rem;
+  line-height: 1.4;
   color: black;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  padding: 0 20px 10px 20px;
+  padding: 0 15px 10px 15px;
   border-right: 2px dotted grey;
   border-left: 2px dotted grey;
   border-top: 2px solid black;
@@ -139,7 +148,7 @@ export const MessageContainer = styled.div`
   flex-direction: column;
   justify-content: flex-end;
   overflow-y: auto;
-  padding: 20px 0;
+  padding: 10px 0;
   scroll-behavior: smooth;
 `;
 

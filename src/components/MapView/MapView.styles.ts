@@ -2,20 +2,19 @@
 import styled from 'styled-components';
 
 export const MapContainer = styled.div`
-  position: absolute;
-  width: 80%;
-  max-width: 100%;
-  height: 70%;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -67%);
+  position: relative; /* Change from absolute so it fills correctly */
+  width: 100%;
+  height: 100%;
   z-index: 3;
   overflow: hidden;
+  background-color: #0b1a26;
 `;
 
 export const MapImage = styled.img`
   width: 100%;
   height: 100%;
+  object-fit: cover;
+  filter: opacity(0.85);
 `;
 
 export const CityButton = styled.button<{ top: number; left: number }>`
