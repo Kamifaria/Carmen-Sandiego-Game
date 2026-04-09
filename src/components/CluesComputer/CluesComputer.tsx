@@ -5,7 +5,9 @@ import {
   CluesContainer,
   ScreenHeader,
   ClueButton,
-  FilterButton
+  FilterButton,
+  SuspectsGallery,
+  SuspectCard
 } from "./CluesComputer.styles";
 import { trupeiros, Trupe } from "../../utils/trupeUtils";
 
@@ -75,13 +77,14 @@ const CluesComputer: React.FC<CluesComputerProps> = ({
       const saved = localStorage.getItem("filteredViloes");
       if (saved) {
         try {
-          return JSON.parse(saved) as Trupe[];
+          const parsed = JSON.parse(saved) as Trupe[];
+          return parsed.length > 0 ? parsed : trupeiros;
         } catch {
-          return [];
+          return trupeiros;
         }
       }
     }
-    return [];
+    return trupeiros;
   });
 
   useEffect(() => {
@@ -135,12 +138,20 @@ const CluesComputer: React.FC<CluesComputerProps> = ({
           </ClueButton>
         ))}
         <FilterButton onClick={handleFilter}>PESQUISAR</FilterButton>
-        {filteredViloes.length === 1 && (
-          <p>
-            Agora você tem um mandado de prisão para{" "}
-            <strong>{filteredViloes[0].nome}</strong>
-          </p>
-        )}
+
+        <SuspectsGallery>
+          {filteredViloes.length > 0 ? (
+            filteredViloes.map((vilao) => (
+              <SuspectCard key={vilao.nome} $isWarrant={filteredViloes.length === 1}>
+                <img className="photo" src={vilao.imagem} alt={vilao.nome} />
+                <div className="name">{vilao.nome}</div>
+                <div className="stamp">WARRANT</div>
+              </SuspectCard>
+            ))
+          ) : (
+            <p style={{ color: "red", textAlign: "center" }}>NENHUM SUSPEITO ENCONTRADO.</p>
+          )}
+        </SuspectsGallery>
       </CluesContainer>
     </StyledCluesComputer>
   );
