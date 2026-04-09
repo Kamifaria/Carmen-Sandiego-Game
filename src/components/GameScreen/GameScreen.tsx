@@ -6,7 +6,7 @@ import "react-typist/dist/Typist.css";
 import { useAuth } from "../../services/AuthContext";
 import { pickRandomLocation, LocationData, locationsData } from "../../utils/localUtils";
 import { pickRandomArtefact } from "../../utils/artefactsUtils";
-import { trupeiros } from "../../utils/trupeUtils";
+import { trupeiros, Trupe } from "../../utils/trupeUtils";
 
 import SearchOptions from "../SearchOptions/SearchOptions";
 import MapView from "../MapView/MapView";
@@ -51,6 +51,9 @@ const GameScreen = () => {
   const [rankAtual, setRankAtual] = useState("Novato");
   const [casesResolved] = useState(0);
   const [currentLocation, setCurrentLocation] = useState<LocationData>(pickRandomLocation());
+  const [villain, setVillain] = useState<Trupe>(trupeiros[0]);
+  const [gamePath, setGamePath] = useState<LocationData[]>([]);
+  const [currentPathIndex, setCurrentPathIndex] = useState(0);
   const [startedArtefact, setStartedArtefact] = useState<string>("");
   const [suspectGender, setSuspectGender] = useState<string>("");
   const [showButtons, setShowButtons] = useState(false);
@@ -104,16 +107,45 @@ const GameScreen = () => {
   }, [handleNextStep, messages.length, step]);
 
   const handleSearch = (placeName: string) => {
-    setBottomMessage(`Você procurou em: ${placeName}. Nenhuma pista encontrada por enquanto.`);
-    // Aqui você poderia adicionar lógica para mostrar pistas reais baseadas no suspeito
+    // Check if player is on the correct city in the path
+    if (gamePath.length > 0 && currentLocation.name === gamePath[currentPathIndex].name) {
+      if (currentPathIndex === gamePath.length - 1) {
+        setBottomMessage(`🔍 Você revistou o(a) ${placeName} e encontrou o esconderijo! O suspeito está aqui. Emita o mandado de prisão no computador e prenda-o!`);
+      } else {
+        const nextCity = gamePath[currentPathIndex + 1];
+        const clueType = Math.random() > 0.5 ? 'city' : 'villain';
+        
+        if (clueType === 'city') {
+          setBottomMessage(`🕵️‍♀️ Dica no ${placeName}: Ouvi dizer que fugiram para um local com esta característica: "${nextCity.description.substring(0, 60)}..."`);
+        } else {
+          const attributes = [
+            `tinha cabelo ${villain.cabelo}`,
+            `gostava de ${villain.hobby}`,
+            `tinha a seguinte característica: ${villain.caracteristica}`,
+            `foi visto entrando num(a) ${villain.veiculo}`
+          ];
+          const randomAttr = attributes[Math.floor(Math.random() * attributes.length)];
+          setBottomMessage(`🕵️‍♀️ Dica no ${placeName}: O suspeito esteve aqui. Lembro claramente que ele(a) ${randomAttr}.`);
+        }
+      }
+    } else {
+      setBottomMessage(`❌ Você revistou o(a) ${placeName}. Não achamos nada útil. Acho que você perdeu o rastro! Volte e tente outra cidade.`);
+    }
   };
 
   const handleCitySelect = (cityName: string) => {
     const city = locationsData.find(l => l.name === cityName);
     if (city) {
       setCurrentLocation(city);
-      setBottomMessage(`Você viajou para: ${cityName}`);
-      setShowMapView(false); // Fecha o mapa após viajar
+      setShowMapView(false);
+      
+      const nextCityInPath = gamePath[currentPathIndex + 1];
+      if (nextCityInPath && city.name === nextCityInPath.name) {
+        setCurrentPathIndex(prev => prev + 1);
+        setBottomMessage(`✈️ Você viajou para ${cityName}. Há rumores recentes do criminoso por aqui!`);
+      } else {
+        setBottomMessage(`✈️ Você viajou para ${cityName}. Parece tudo muito quieto. Você está no lugar errado!`);
+      }
     }
   };
 
@@ -129,8 +161,18 @@ const GameScreen = () => {
   useEffect(() => {
     setRankAtual(updateRank(casesResolved));
     setStartedArtefact(pickRandomArtefact());
-    const randomTrupeiro = trupeiros[Math.floor(Math.random() * trupeiros.length)];
-    setSuspectGender(randomTrupeiro.sexo);
+    
+    // Sortear o vilão
+    const randomVillain = trupeiros[Math.floor(Math.random() * trupeiros.length)];
+    setVillain(randomVillain);
+    setSuspectGender(randomVillain.sexo);
+
+    // Gerar uma nova trilha aleatória de 4 cidades
+    const shuffledLocations = [...locationsData].sort(() => 0.5 - Math.random());
+    const path = shuffledLocations.slice(0, 4);
+    setGamePath(path);
+    setCurrentLocation(path[0]);
+    setCurrentPathIndex(0);
   }, [casesResolved]);
 
   useEffect(() => {
