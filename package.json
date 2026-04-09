@@ -35,7 +35,7 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "start-server": "node server.ts",
+    "start-server": "node api/index.ts",
     "dev": "concurrently \"npm run start\" \"npm run start-server\"",
     "build": "react-scripts build",
     "test": "react-scripts test",

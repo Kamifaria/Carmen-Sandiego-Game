@@ -1,4 +1,3 @@
-// server.ts
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
@@ -9,19 +8,30 @@ const app = express();
 app.use(cors());
 app.use(bodyParser.json());
 
-// Conexão com MongoDB
 const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/carmen_sandiego';
-mongoose.connect(MONGODB_URI)
-  .then(() => console.log('✅ Conectado ao MongoDB'))
-  .catch(err => console.error('❌ Erro ao conectar ao MongoDB:', err));
+let isConnected = false;
 
-// Schema do Usuário
+// Middleware para garantir conexão com MongoDB (padrão Serverless)
+app.use(async (req, res, next) => {
+  if (!isConnected) {
+    try {
+      await mongoose.connect(MONGODB_URI);
+      isConnected = true;
+      console.log('✅ Conectado ao MongoDB (Serverless)');
+    } catch (err) {
+      console.error('❌ Erro ao conectar ao MongoDB:', err);
+    }
+  }
+  next();
+});
+
+// Schema do Usuário (protegido contra reescrita no Serverless)
 const userSchema = new mongoose.Schema({
   username: { type: String, required: true, unique: true },
   email: { type: String, required: true, unique: true },
   password: { type: String, required: true }
 });
-const User = mongoose.model('User', userSchema);
+const User = mongoose.models.User || mongoose.model('User', userSchema);
 
 // Middleware para Limpeza de Cache (Force Refresh)
 app.use((req, res, next) => {
@@ -89,8 +99,13 @@ app.post('/api/login', async (req, res) => {
   }
 });
 
-const PORT = process.env.PORT || 3001;
-app.listen(PORT, () => {
-  console.log(`🚀 Servidor rodando na porta ${PORT}`);
-});
+// Apenas inicia a porta se não estiver rodando no Vercel
+if (require.main === module) {
+  const PORT = process.env.PORT || 3001;
+  app.listen(PORT, () => {
+    console.log(`🚀 Servidor rodando na porta ${PORT}`);
+  });
+}
 
+// Exportando o app para o Vercel Serverless Function
+module.exports = app;
