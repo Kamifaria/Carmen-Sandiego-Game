@@ -62,7 +62,37 @@ const GameScreen = () => {
   const [showSearchOptions, setShowSearchOptions] = useState(false);
   const [showCluesComputer, setShowCluesComputer] = useState(false);
   const [isSuspectListUpdated, setIsSuspectListUpdated] = useState(false);
+  const [elapsedHours, setElapsedHours] = useState(0);
+  const [issuedWarrant, setIssuedWarrant] = useState<string | null>(null);
+  const [gameState, setGameState] = useState<"playing"|"won"|"lost">("playing");
   const audioRef = useRef<HTMLAudioElement | null>(null);
+
+  const formatDateTime = (hoursAcc: number) => {
+    const days = ["Seg", "Ter", "Qua", "Qui", "Sex", "Sáb", "Dom"];
+    const totalHours = 9 + hoursAcc;
+    const dayIndex = Math.floor(totalHours / 24) % 7;
+    const hourOfDay = totalHours % 24;
+    return `${days[dayIndex]}, ${hourOfDay.toString().padStart(2, '0')}:00`;
+  };
+
+  const advanceTime = (hours: number, additionalMessage: string = "") => {
+    if (gameState !== "playing") return;
+    let newHours = elapsedHours + hours;
+    const hourOfDay = (9 + newHours) % 24;
+    let sleepMessage = "";
+    if (hourOfDay >= 22 || hourOfDay < 6) {
+      newHours += 8; // Dormiu
+      sleepMessage = " 😴 (O detetive dormiu 8 horas...)";
+    }
+    setElapsedHours(newHours);
+    
+    if (newHours >= 152) { // 6 dias úteis max
+      setGameState("lost");
+      setBottomMessage(`⏰ O prazo de Domingo às 17h estourou! O ladrão escapou no escuro... FIM DE JOGO.`);
+    } else {
+      setBottomMessage(additionalMessage + sleepMessage);
+    }
+  };
 
   const messages = useMemo(() => [
     { type: "text", content: "Você foi identificado, {username}. Seu rank atual é {rankAtual}." },
@@ -107,16 +137,27 @@ const GameScreen = () => {
   }, [handleNextStep, messages.length, step]);
 
   const handleSearch = (placeName: string) => {
-    // Check if player is on the correct city in the path
+    if (gameState !== "playing") return;
+
     if (gamePath.length > 0 && currentLocation.name === gamePath[currentPathIndex].name) {
       if (currentPathIndex === gamePath.length - 1) {
-        setBottomMessage(`🔍 Você revistou o(a) ${placeName} e encontrou o esconderijo! O suspeito está aqui. Emita o mandado de prisão no computador e prenda-o!`);
+        if (issuedWarrant === villain.nome) {
+          setGameState("won");
+          setBottomMessage(`🚨 VOCÊ ACHOU O(A) ${villain.nome}! A polícia identificou o seu mandado de prisão válido. CASO ENCERRADO. PARABÉNS!`);
+        } else if (issuedWarrant) {
+          setGameState("lost");
+          setBottomMessage(`🚨 Você achou o suspeito, MAS seu mandado era para ${issuedWarrant}. Sem mandado legal correto, o larápio riu e fugiu! FIM DE JOGO.`);
+        } else {
+          setGameState("lost");
+          setBottomMessage(`🚨 Você achou o esconderijo do suspeito, mas esqueceu de emitir um Mandado de Prisão no computador!! A polícia não pôde prender e o ladrão fugiu. FIM DE JOGO.`);
+        }
       } else {
         const nextCity = gamePath[currentPathIndex + 1];
         const clueType = Math.random() > 0.5 ? 'city' : 'villain';
         
+        let msg = "";
         if (clueType === 'city') {
-          setBottomMessage(`🕵️‍♀️ Dica no ${placeName}: Ouvi dizer que fugiram para um local com esta característica: "${nextCity.description.substring(0, 60)}..."`);
+          msg = `🕵️‍♀️ Dica no ${placeName}: Ouvi dizer que fugiram para um local assim: "${nextCity.description.substring(0, 60)}..."`;
         } else {
           const attributes = [
             `tinha cabelo ${villain.cabelo}`,
@@ -125,15 +166,18 @@ const GameScreen = () => {
             `foi visto entrando num(a) ${villain.veiculo}`
           ];
           const randomAttr = attributes[Math.floor(Math.random() * attributes.length)];
-          setBottomMessage(`🕵️‍♀️ Dica no ${placeName}: O suspeito esteve aqui. Lembro claramente que ele(a) ${randomAttr}.`);
+          msg = `🕵️‍♀️ Dica no ${placeName}: O suspeito esteve aqui e lembro que ele(a) ${randomAttr}.`;
         }
+        advanceTime(2, msg);
       }
     } else {
-      setBottomMessage(`❌ Você revistou o(a) ${placeName}. Não achamos nada útil. Acho que você perdeu o rastro! Volte e tente outra cidade.`);
+      advanceTime(2, `❌ Você revistou o(a) ${placeName}. Não achamos nada útil. Acho que perdeu o rastro! Volte e tente outra cidade.`);
     }
   };
 
   const handleCitySelect = (cityName: string) => {
+    if (gameState !== "playing") return;
+
     const city = locationsData.find(l => l.name === cityName);
     if (city) {
       setCurrentLocation(city);
@@ -142,9 +186,9 @@ const GameScreen = () => {
       const nextCityInPath = gamePath[currentPathIndex + 1];
       if (nextCityInPath && city.name === nextCityInPath.name) {
         setCurrentPathIndex(prev => prev + 1);
-        setBottomMessage(`✈️ Você viajou para ${cityName}. Há rumores recentes do criminoso por aqui!`);
+        advanceTime(4, `✈️ Você viajou para ${cityName}. Há rumores recentes do criminoso por aqui!`);
       } else {
-        setBottomMessage(`✈️ Você viajou para ${cityName}. Parece tudo muito quieto. Você está no lugar errado!`);
+        advanceTime(4, `✈️ Você viajou para ${cityName}. Parece tudo muito quieto. Você está no lugar errado!`);
       }
     }
   };
@@ -173,6 +217,10 @@ const GameScreen = () => {
     setGamePath(path);
     setCurrentLocation(path[0]);
     setCurrentPathIndex(0);
+    setElapsedHours(0);
+    setGameState("playing");
+    setIssuedWarrant(null);
+    setBottomMessage("");
   }, [casesResolved]);
 
   useEffect(() => {
@@ -213,6 +261,10 @@ const GameScreen = () => {
         </LeftColumn>
         <RightColumn>
           <RightColumnDescription isVisible={!showLeftColumn}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '2px solid red', paddingBottom: '10px', marginBottom: '10px', color: 'red' }}>
+              <strong>📍 {currentLocation.name}</strong>
+              <strong>⏳ {formatDateTime(elapsedHours)}</strong>
+            </div>
             {currentLocation.description}
           </RightColumnDescription>
           <OptionsContainer isVisible={showMapView || showSearchOptions || showCluesComputer}>
@@ -231,7 +283,14 @@ const GameScreen = () => {
             )}
             {showCluesComputer && (
               <CluesComputer 
-                onFilterSuspects={(suspects) => console.log(suspects)} 
+                onFilterSuspects={(suspects) => {
+                  if (suspects.length === 1) {
+                    setIssuedWarrant(suspects[0]);
+                    setBottomMessage(`📑 Mandado de prisão emitido legalmente para: ${suspects[0]}!`);
+                  } else {
+                    setIssuedWarrant(null);
+                  }
+                }} 
                 isSuspectListUpdated={isSuspectListUpdated}
                 setIsSuspectListUpdated={setIsSuspectListUpdated}
               />
