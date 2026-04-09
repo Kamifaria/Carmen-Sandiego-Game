@@ -4,11 +4,13 @@ import Typist from "react-typist";
 import "react-typist/dist/Typist.css";
 
 import { useAuth } from "../../services/AuthContext";
-import { pickRandomLocation, LocationData } from "../../utils/localUtils";
+import { pickRandomLocation, LocationData, locationsData } from "../../utils/localUtils";
 import { pickRandomArtefact } from "../../utils/artefactsUtils";
 import { trupeiros } from "../../utils/trupeUtils";
 
 import SearchOptions from "../SearchOptions/SearchOptions";
+import MapView from "../MapView/MapView";
+import CluesComputer from "../CluesComputer/CluesComputer";
 import HeaderComponent from "../Header/Header";
 import Button from "../Button/Button";
 
@@ -31,7 +33,7 @@ const GameScreen = () => {
   const { user, setUser } = useAuth();
   const navigate = useNavigate();
 
-  // Proteção de Rota: Redireciona para o login se não houver usuário logado
+  // Proteção de Rota
   useEffect(() => {
     const storedUser = localStorage.getItem('username');
     if (!storedUser && !user) {
@@ -40,6 +42,7 @@ const GameScreen = () => {
       setUser({ username: storedUser });
     }
   }, [user, setUser, navigate]);
+
   const [step, setStep] = useState(0);
   const [messagesToShow, setMessagesToShow] = useState<string[]>([]);
   const [messagesDisplayed, setMessagesDisplayed] = useState<string[]>([]);
@@ -47,7 +50,7 @@ const GameScreen = () => {
   const [bottomMessage, setBottomMessage] = useState("");
   const [rankAtual, setRankAtual] = useState("Novato");
   const [casesResolved] = useState(0);
-  const [currentLocation] = useState<LocationData>(pickRandomLocation());
+  const [currentLocation, setCurrentLocation] = useState<LocationData>(pickRandomLocation());
   const [startedArtefact, setStartedArtefact] = useState<string>("");
   const [suspectGender, setSuspectGender] = useState<string>("");
   const [showButtons, setShowButtons] = useState(false);
@@ -55,6 +58,7 @@ const GameScreen = () => {
   const [showMapView, setShowMapView] = useState(false);
   const [showSearchOptions, setShowSearchOptions] = useState(false);
   const [showCluesComputer, setShowCluesComputer] = useState(false);
+  const [isSuspectListUpdated, setIsSuspectListUpdated] = useState(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
   const messages = useMemo(() => [
@@ -99,6 +103,20 @@ const GameScreen = () => {
     }
   }, [handleNextStep, messages.length, step]);
 
+  const handleSearch = (placeName: string) => {
+    setBottomMessage(`Você procurou em: ${placeName}. Nenhuma pista encontrada por enquanto.`);
+    // Aqui você poderia adicionar lógica para mostrar pistas reais baseadas no suspeito
+  };
+
+  const handleCitySelect = (cityName: string) => {
+    const city = locationsData.find(l => l.name === cityName);
+    if (city) {
+      setCurrentLocation(city);
+      setBottomMessage(`Você viajou para: ${cityName}`);
+      setShowMapView(false); // Fecha o mapa após viajar
+    }
+  };
+
   const updateRank = (casesResolved: number): string => {
     if (casesResolved >= 30) return "Superintendente";
     if (casesResolved >= 20) return "Agente";
@@ -111,7 +129,8 @@ const GameScreen = () => {
   useEffect(() => {
     setRankAtual(updateRank(casesResolved));
     setStartedArtefact(pickRandomArtefact());
-    setSuspectGender(trupeiros[Math.floor(Math.random() * trupeiros.length)].sexo);
+    const randomTrupeiro = trupeiros[Math.floor(Math.random() * trupeiros.length)];
+    setSuspectGender(randomTrupeiro.sexo);
   }, [casesResolved]);
 
   useEffect(() => {
@@ -146,11 +165,8 @@ const GameScreen = () => {
                   {messagesToShow[messagesToShow.length - 1]}
                 </Typist>
               </MessageContainer>
-
-              {/* Máquina de escrever no fim da coluna esquerda */}
               <TypewriterContainer isTyping={!readyForNext} />
             </TypingArea>
-
           )}
         </LeftColumn>
         <RightColumn>
@@ -158,7 +174,26 @@ const GameScreen = () => {
             {currentLocation.description}
           </RightColumnDescription>
           <OptionsContainer isVisible={showMapView || showSearchOptions || showCluesComputer}>
-            {showSearchOptions && <SearchOptions currentCountry={currentLocation.name} />}
+            {showSearchOptions && (
+              <SearchOptions 
+                currentCountry={currentLocation.name} 
+                onSearch={handleSearch} 
+              />
+            )}
+            {showMapView && (
+              <MapView 
+                currentLocation={currentLocation} 
+                selectedCity={null} 
+                onCitySelect={handleCitySelect} 
+              />
+            )}
+            {showCluesComputer && (
+              <CluesComputer 
+                onFilterSuspects={(suspects) => console.log(suspects)} 
+                isSuspectListUpdated={isSuspectListUpdated}
+                setIsSuspectListUpdated={setIsSuspectListUpdated}
+              />
+            )}
           </OptionsContainer>
           <BottomSection>
             {bottomMessage}

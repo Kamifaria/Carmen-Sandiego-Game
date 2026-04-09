@@ -7,6 +7,7 @@
     "axios": "^1.7.2",
     "body-parser": "^1.20.2",
     "cors": "^2.8.5",
+    "dotenv": "^17.4.1",
     "express": "^4.19.2",
     "mongoose": "^8.4.3",
     "react": "^18.3.1",
@@ -28,7 +29,7 @@
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
     "@types/react-router-dom": "^5.3.3",
-    "ajv": "^6.14.0",
+    "ajv": "^8.12.0",
     "ajv-keywords": "^5.1.0",
     "concurrently": "^8.2.2"
   },
@@ -57,5 +58,6 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
-  }
+  },
+  "proxy": "http://localhost:3001"
 }

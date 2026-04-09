@@ -6,4 +6,4 @@ RUN npm install --omit=dev --legacy-peer-deps
 # O diretório 'public' será montado via volume ou copiado se já existir
 COPY . .
 EXPOSE 3000
-CMD ["node", "server.js"]
+CMD ["node", "server.ts"]

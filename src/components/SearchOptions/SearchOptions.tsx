@@ -22,6 +22,7 @@ interface CountryGroups {
 
 interface SearchOptionsProps {
   currentCountry: string;
+  onSearch: (placeName: string) => void;
 }
 
 const placeGroups: PlaceGroups = {
@@ -59,7 +60,7 @@ const handleClick = (placeName: string) => {
   console.log(`Clicou em ${placeName}`);
 };
 
-const SearchOptions: React.FC<SearchOptionsProps> = ({ currentCountry }) => {
+const SearchOptions: React.FC<SearchOptionsProps> = ({ currentCountry, onSearch }) => {
   const [focusedIndex, setFocusedIndex] = useState<number>(0);
   const groupKey = getGroupByCountry(currentCountry);
   const options = groupKey ? placeGroups[groupKey] : [];
@@ -79,7 +80,7 @@ const SearchOptions: React.FC<SearchOptionsProps> = ({ currentCountry }) => {
 
   const handleItemClick = (index: number, placeName: string) => {
     setFocusedIndex(index);
-    handleClick(placeName);
+    onSearch(placeName);
   };
 
   return (
