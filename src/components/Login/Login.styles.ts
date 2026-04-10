@@ -23,15 +23,15 @@ export const Container = styled.div`
   padding: 20px;
   border-radius: 5px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-  width: 300px;
+  width: 90%;
+  max-width: 320px;
   height: 600px;
   background-image: url('https://i.pinimg.com/564x/8a/9b/43/8a9b434004d294b33df4b17fad22c51b.jpg');
   background-size: cover;
   background-repeat: no-repeat;
   background-position: center;
-  margin-left: -500px;
   opacity: 0;
-  transition: opacity 3.5s ease;
+  transition: opacity 1.5s ease;
 
   &.show {
     opacity: 1;

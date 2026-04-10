@@ -35,6 +35,12 @@ export const ScreenHeader = styled.div`
     font-size: 1.1rem;
     animation: blink 1s infinite step-end;
   }
+
+  @media (max-width: 768px) {
+    font-size: 0.9rem;
+    padding: 8px 12px;
+    &::before { font-size: 0.8rem; }
+  }
 `;
 
 /* ── Scrollable body ─────────────────────────────────────────────────*/
@@ -77,6 +83,13 @@ export const ClueButton = styled.button`
 
   .clue-type { color: #ffffff; text-transform: uppercase; letter-spacing: 2px; }
   .clue-option { color: #00ffcc; font-weight: bold; text-shadow: 0 0 5px rgba(0, 255, 204, 0.4); }
+
+  @media (max-width: 768px) {
+    padding: 8px 12px;
+    font-size: 0.9rem;
+    flex-direction: column;
+    align-items: flex-start;
+  }
 `;
 
 /* ── PESQUISAR button ────────────────────────────────────────────────*/
@@ -124,6 +137,12 @@ export const SuspectsGallery = styled.div`
   &::-webkit-scrollbar { width: 8px; }
   &::-webkit-scrollbar-track { background: transparent; }
   &::-webkit-scrollbar-thumb { background: rgba(0, 255, 204, 0.6); border-radius: 4px; }
+
+  @media (max-width: 768px) {
+    gap: 10px;
+    padding: 10px;
+    justify-content: center;
+  }
 `;
 
 /* ── Single suspect card ─────────────────────────────────────────────*/
@@ -189,5 +208,12 @@ export const SuspectCard = styled.div<{ $isWarrant: boolean }>`
     pointer-events: none;
     box-shadow: 0 0 15px rgba(255, 68, 68, 0.8);
     text-shadow: 0 0 5px rgba(255, 68, 68, 0.8);
+  }
+
+  @media (max-width: 768px) {
+    width: 110px;
+    .photo { width: 90px; height: 90px; }
+    .name { font-size: 0.75rem; }
+    .stamp { font-size: 0.8rem; top: 25px; }
   }
 `;

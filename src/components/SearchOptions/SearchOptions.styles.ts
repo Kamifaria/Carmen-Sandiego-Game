@@ -39,6 +39,13 @@ export const SearchImage = styled.img<{ index: number }>`
     z-index: 10;
   }
 
+  @media (max-width: 768px) {
+    width: 100px;
+    height: 80px;
+    margin: 8px;
+    transform: none !important;
+  }
+
   ${({ index }) =>
     index % 3 === 1 &&
     `
@@ -112,5 +119,11 @@ export const NameItem = styled.li<{ isFocused: boolean }>`
     color: #ffffff;
     background: rgba(0, 255, 204, 0.15);
     border: 1px solid rgba(0, 255, 204, 0.6);
+  }
+
+  @media (max-width: 768px) {
+    font-size: 1.2rem;
+    padding: 10px;
+    letter-spacing: 2px;
   }
 `;

@@ -20,7 +20,7 @@ export const trupeiros: Trupe[] = [
     veiculo: "Moto",
     caracteristica: "Cicatriz",
     outro: "Apaixonado por Arte",
-    imagem: "https://api.dicebear.com/7.x/pixel-art/svg?seed=Chrolliguin",
+    imagem: "https://images.weserv.nl/?url=https://qph.cf2.quoracdn.net/main-qimg-9eab730c82f42a399a5002235b5e491e-lq",
   },
   {
     nome: "Pedronaga",
@@ -31,7 +31,7 @@ export const trupeiros: Trupe[] = [
     caracteristica: "Óculos",
     veiculo: "Limousine",
     outro: "Perito na arte da Katana",
-    imagem: "https://i.pinimg.com/736x/21/53/b7/2153b7548b260de8f5ed1ff1400dc949.jpg",
+    imagem: "https://images.weserv.nl/?url=https://i.pinimg.com/736x/21/53/b7/2153b7548b260de8f5ed1ff1400dc949.jpg",
   },
   {
     nome: "Ferinhatan",
@@ -42,7 +42,7 @@ export const trupeiros: Trupe[] = [
     caracteristica: "Joias",
     veiculo: "Conversivel",
     outro: "Astuto e muito ganancioso",
-    imagem: "https://api.dicebear.com/7.x/pixel-art/svg?seed=Ferinhatan",
+    imagem: "https://images.weserv.nl/?url=https://64.media.tumblr.com/60a18d42b6284e2af17fdc7a8676fd74/b74e2331fa27026d-59/s250x400/f5025b37f5cc1074cc64d74bf76b6a931070a3bf.jpg",
   },
   {
     nome: "Biamachi",
@@ -53,7 +53,7 @@ export const trupeiros: Trupe[] = [
     caracteristica: "Tatuagem",
     veiculo: "Jipe",
     outro: "Costura com precisão cirúrgica",
-    imagem: "https://api.dicebear.com/7.x/pixel-art/svg?seed=Biamachi",
+    imagem: "https://images.weserv.nl/?url=https://64.media.tumblr.com/37375c459d91d245206f47f3f294d7cc/43407584080930c6-6c/s500x750/d3ae64dde267e5d4d4ede2d099d7ebeea63f2151.jpg",
   },
   {
     nome: "Hisokami",
@@ -64,7 +64,7 @@ export const trupeiros: Trupe[] = [
     caracteristica: "Cicatriz",
     veiculo: "Limousine",
     outro: "Mestra das cartas ilusórias",
-    imagem: "https://i.pinimg.com/736x/32/19/22/321922c159bf4070a927a42a0335e8cf.jpg",
+    imagem: "https://images.weserv.nl/?url=https://i.pinimg.com/736x/32/19/22/321922c159bf4070a927a42a0335e8cf.jpg",
   },
   {
     nome: "Jaguatiphinks",
@@ -75,7 +75,7 @@ export const trupeiros: Trupe[] = [
     caracteristica: "Joias",
     veiculo: "Moto",
     outro: "Usa casacos esportivos sempre",
-    imagem: "https://api.dicebear.com/7.x/pixel-art/svg?seed=Jaguatiphinks",
+    imagem: "https://images.weserv.nl/?url=https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSyJNHb8L8HicHllFbwcFzp2JdVOJ7eO2tBuxDFRkTqJEQhfaN9R5NBMg-rC7Pmf4KkcQo&usqp=CAU",
   },
   {
     nome: "Jonark",
@@ -86,7 +86,7 @@ export const trupeiros: Trupe[] = [
     caracteristica: "Óculos",
     veiculo: "Moto",
     outro: "Trabalha guiando grupos nas montanhas",
-    imagem: "https://api.dicebear.com/7.x/pixel-art/svg?seed=Jonark",
+    imagem: "https://images.weserv.nl/?url=https://personality-index.com/images/profile/428d2b91-1926-4757-89a7-07d32f031d93.jpg",
   },
   {
     nome: "Franklin",
@@ -97,7 +97,7 @@ export const trupeiros: Trupe[] = [
     caracteristica: "Joias",
     veiculo: "Conversivel",
     outro: "Carga pesada e porte assustador",
-    imagem: "https://api.dicebear.com/7.x/pixel-art/svg?seed=Franklin",
+    imagem: "https://images.weserv.nl/?url=https://cdn.personalitylist.com/avatars/7317.png",
   },
   {
     nome: "Noshizuko",
@@ -108,7 +108,18 @@ export const trupeiros: Trupe[] = [
     caracteristica: "Joias",
     veiculo: "Limousine",
     outro: "Mora em porões de leilões clandestinos",
-    imagem: "https://api.dicebear.com/7.x/pixel-art/svg?seed=Noshizuko",
+    imagem: "https://images.weserv.nl/?url=https://64.media.tumblr.com/0aba7fda5f57484ba969ecd4b7115df2/42ebd1ec3c204215-52/s400x600/1dd3cf0aa37f5fab39aedc75d650f6d2867e783b.jpg",
+  },
+  {
+    nome: "Pakunoda",
+    sexo: "Feminino",
+    idade: "28 ANOS",
+    hobby: "Futebol",
+    cabelo: "Loiro",
+    caracteristica: "Óculos",
+    veiculo: "Jipe",
+    outro: "Mente afiada para interrogar",
+    imagem: "https://images.weserv.nl/?url=https://i.pinimg.com/736x/f1/ef/e4/f1efe4e1efd2db2a503c9dcb7cb88352.jpg",
   },
   {
     nome: "skye",
@@ -119,7 +130,7 @@ export const trupeiros: Trupe[] = [
     caracteristica: "Óculos",
     veiculo: "Jipe",
     outro: "Mente afiada para interrogar",
-    imagem: "https://i.pinimg.com/736x/5d/76/89/5d7689d0db3b42ee86f1e1eb84ef03ef.jpg",
+    imagem: "https://images.weserv.nl/?url=https://i.pinimg.com/736x/5d/76/89/5d7689d0db3b42ee86f1e1eb84ef03ef.jpg",
   },
   {
     nome: "Kalangolenof",
@@ -130,7 +141,7 @@ export const trupeiros: Trupe[] = [
     caracteristica: "Tatuagem",
     veiculo: "Jipe",
     outro: "Tem um som estranho na voz",
-    imagem: "https://api.dicebear.com/7.x/pixel-art/svg?seed=Kalangolenof",
+    imagem: "https://images.weserv.nl/?url=https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQIR6KRv1N7bTou1X1iOlgAL3f12WSAsAM0ARabzEXiowq52UkTJXk3Vgc8_WPa8P--vs4&usqp=CAU",
   },
   {
     nome: "Ulobin",
@@ -141,7 +152,7 @@ export const trupeiros: Trupe[] = [
     caracteristica: "Óculos",
     veiculo: "Moto",
     outro: "Grita como um leão assustador",
-    imagem: "https://api.dicebear.com/7.x/pixel-art/svg?seed=Ulobin",
+    imagem: "https://images.weserv.nl/?url=https://i.pinimg.com/736x/6e/01/ae/6e01aeb685970ef4d0ec30b71636bae5.jpg",
   },
   {
     nome: "Weskortopi",
@@ -152,7 +163,7 @@ export const trupeiros: Trupe[] = [
     caracteristica: "Tatuagem",
     veiculo: "Jipe",
     outro: "Coleciona objetos miniatura",
-    imagem: "https://api.dicebear.com/7.x/pixel-art/svg?seed=Weskortopi",
+    imagem: "https://images.weserv.nl/?url=https://pm1.aminoapps.com/7273/b3bb3927665063bad6820f6566f0ad17dd2e72d9r1-210-240v2_00.jpg",
   },
   {
     nome: "Carmen Sandiego trupe",
@@ -163,6 +174,6 @@ export const trupeiros: Trupe[] = [
     caracteristica: "Joias",
     veiculo: "Conversivel",
     outro: "Pessoa misteriosa, nunca foi vista.",
-    imagem: "https://api.dicebear.com/7.x/pixel-art/svg?seed=CarmenSandiego",
+    imagem: "https://images.weserv.nl/?url=https://i1.sndcdn.com/artworks-000486152007-9aymou-t500x500.jpg",
   },
 ];

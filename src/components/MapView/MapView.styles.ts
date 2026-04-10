@@ -18,8 +18,8 @@ export const MapImage = styled.img`
 
 export const CityButton = styled.button<{ top: number; left: number; $isCurrent: boolean }>`
   position: absolute;
-  top: ${props => props.top}px;
-  left: ${props => props.left}px;
+  top: ${props => props.top}%;
+  left: ${props => props.left}%;
   transform: translate(-50%, -50%);
   margin: 0;
   padding: 0;
@@ -68,9 +68,10 @@ export const CityName = styled.span<{ leftPosition: boolean; $isCurrent: boolean
 export const Line = styled.div<{ startX: number; startY: number; endX: number; endY: number }>`
   position: absolute;
   border-top: 2px dashed rgba(255, 100, 100, 0.7);
-  width: ${props => Math.sqrt((props.endX - props.startX) ** 2 + (props.endY - props.startY) ** 2)}px;
-  top: ${props => props.startY}px;
-  left: ${props => props.startX}px;
+  /* Use viewport units for distance calculation to keep it relative */
+  width: ${props => Math.sqrt((props.endX - props.startX) ** 2 + (props.endY - props.startY) ** 2)}%;
+  top: ${props => props.startY}%;
+  left: ${props => props.startX}%;
   transform: rotate(${props => Math.atan2(props.endY - props.startY, props.endX - props.startX)}rad);
   transform-origin: 0 0;
   z-index: 4;

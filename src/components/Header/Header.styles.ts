@@ -97,6 +97,11 @@ export const ModalSplitView = styled.div`
   display: flex;
   flex: 1;
   overflow: hidden;
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+    overflow-y: auto;
+  }
 `;
 
 export const LeftListPanel = styled.div`
@@ -111,6 +116,16 @@ export const LeftListPanel = styled.div`
   &::-webkit-scrollbar { width: 4px; }
   &::-webkit-scrollbar-track { background: transparent; }
   &::-webkit-scrollbar-thumb { background: #00ffcc; }
+
+  @media (max-width: 768px) {
+    flex: 0 0 120px;
+    border-right: none;
+    border-bottom: 1px solid #00ffcc;
+    flex-direction: row;
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding: 10px;
+  }
 `;
 
 export const ListPanelItem = styled.div<{ isSelected: boolean }>`
@@ -127,10 +142,17 @@ export const ListPanelItem = styled.div<{ isSelected: boolean }>`
   border: 1px solid ${({ isSelected }) => (isSelected ? "#00ffcc" : "transparent")};
   border-radius: 4px;
   transition: all 0.2s;
+  white-space: nowrap;
 
   &:hover {
     background: rgba(0, 255, 204, 0.1);
     color: #ffffff;
+  }
+
+  @media (max-width: 768px) {
+    margin: 0 5px;
+    padding: 8px 15px;
+    font-size: 0.9rem;
   }
 `;
 
@@ -140,12 +162,22 @@ export const RightDetailPanel = styled.div`
   display: flex;
   flex-direction: column;
   overflow-y: auto;
+
+  @media (max-width: 768px) {
+    padding: 20px;
+  }
 `;
 
 export const TopDetailsRow = styled.div`
   display: flex;
   gap: 40px;
   margin-bottom: 30px;
+
+  @media (max-width: 900px) {
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+  }
 `;
 
 export const BigImage = styled.img`
@@ -155,6 +187,11 @@ export const BigImage = styled.img`
   border: 2px solid #00ffcc;
   box-shadow: 0 0 25px rgba(0, 255, 204, 0.3);
   filter: contrast(1.1);
+
+  @media (max-width: 480px) {
+    width: 180px;
+    height: 180px;
+  }
 `;
 
 export const SpecsColumn = styled.div`
@@ -170,6 +207,16 @@ export const SpecsColumn = styled.div`
 
   .label { color: #00ffcc; width: 180px; display: inline-block; font-weight: bold; }
   .value { color: #ffffff; text-shadow: 0 0 5px rgba(255,255,255,0.4); text-transform: uppercase; }
+
+  @media (max-width: 768px) {
+    font-size: 1.1rem;
+    .label { width: 150px; }
+  }
+
+  @media (max-width: 480px) {
+    font-size: 1rem;
+    .label { width: 120px; }
+  }
 `;
 
 export const SystemLogBox = styled.div`

@@ -20,6 +20,13 @@ export const Title = styled.h2`
   margin-bottom: 20px;
   position: absolute;
   top: 10%;
+  text-align: center;
+  width: 90%;
+
+  @media (max-width: 768px) {
+    font-size: 32px;
+    top: 5%;
+  }
 `;
 
 export const Navigation = styled.nav`

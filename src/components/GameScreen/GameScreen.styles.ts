@@ -71,6 +71,10 @@ export const MainContentArea = styled.div`
   flex: 1;
   width: 100%;
   overflow: hidden;
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+  }
 `;
 
 // ─────────────────────────────────────────────
@@ -88,6 +92,14 @@ export const LeftColumn = styled.div<{ $isHidden?: boolean }>`
   border-right: ${({ $isHidden }) => ($isHidden ? "0px" : "2px solid #2a5f6b")};
   transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
   overflow: hidden;
+
+  @media (max-width: 768px) {
+    flex: ${({ $isHidden }) => ($isHidden ? "0 0 0px" : "0 0 180px")};
+    width: 100%;
+    height: ${({ $isHidden }) => ($isHidden ? "0px" : "180px")};
+    border-right: none;
+    border-bottom: ${({ $isHidden }) => ($isHidden ? "0px" : "2px solid #2a5f6b")};
+  }
 `;
 
 export const LeftColumnImage = styled.img<{ isVisible: boolean }>`
@@ -165,6 +177,10 @@ export const OptionsContainer = styled.div<{ isVisible: boolean }>`
   background-color: #050e14;
   z-index: 10;
   overflow: hidden;
+
+  @media (max-width: 768px) {
+    height: calc(100% - 110px);
+  }
 `;
 
 // ─────────────────────────────────────────────
@@ -173,7 +189,6 @@ export const OptionsContainer = styled.div<{ isVisible: boolean }>`
 export const BottomSection = styled.div`
   width: 100%;
   min-height: 90px;
-  max-height: 90px;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -189,6 +204,10 @@ export const BottomSection = styled.div`
   flex-shrink: 0;
   margin-top: auto;
   text-align: center;
+
+  @media (max-width: 768px) {
+    min-height: 110px;
+  }
 `;
 
 export const BottomMessage = styled.p`
@@ -266,6 +285,11 @@ export const ButtonContainerWrapper = styled.div`
   display: flex;
   justify-content: center;
   gap: 12px;
+  flex-wrap: wrap;
+
+  @media (max-width: 480px) {
+    gap: 8px;
+  }
 `;
 
 // ─────────────────────────────────────────────

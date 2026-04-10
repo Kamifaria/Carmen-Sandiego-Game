@@ -115,11 +115,11 @@ export const HeaderComponent: React.FC = () => {
 };
 
 const SystemLogWriter: React.FC<{ nome: string; outro: string }> = ({ nome, outro }) => {
-  const text = \`SISTEMA INTERPOL ACESSANDO REGISTROS DE \${nome.toUpperCase()}...
+  const text = `SISTEMA INTERPOL ACESSANDO REGISTROS DE ${nome.toUpperCase()}...
 PONTOS DE INTERESSE DETECTADOS:
->> \${outro.toUpperCase()}
+>> ${outro.toUpperCase()}
 
-[REGISTRO FINALIZADO]\`;
+[REGISTRO FINALIZADO]`;
 
   const { displayed, done } = useTypewriter(text, 15);
 

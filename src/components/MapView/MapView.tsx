@@ -15,6 +15,11 @@ interface MapViewProps {
   onCitySelect: (city: string) => void;
 }
 
+const DESIGN_WIDTH = 1300;
+const DESIGN_HEIGHT = 720;
+
+const toPct = (val: number, base: number) => (val / base) * 100;
+
 const MapView: React.FC<MapViewProps> = ({ currentLocation, onCitySelect }) => {
   const [line, setLine] = useState<{ startX: number; startY: number; endX: number; endY: number } | null>(null);
   const [planePos, setPlanePos] = useState<{ x: number; y: number; angle: number } | null>(null);
@@ -25,7 +30,13 @@ const MapView: React.FC<MapViewProps> = ({ currentLocation, onCitySelect }) => {
   useEffect(() => {
     if (!isFlying) {
       const city = locationsData.find(c => c.name === currentLocation.name);
-      if (city) setPlanePos({ x: city.left, y: city.top, angle: 0 });
+      if (city) {
+        setPlanePos({ 
+          x: toPct(city.left, DESIGN_WIDTH), 
+          y: toPct(city.top, DESIGN_HEIGHT), 
+          angle: 0 
+        });
+      }
     }
   }, [currentLocation, isFlying]);
 
@@ -46,13 +57,18 @@ const MapView: React.FC<MapViewProps> = ({ currentLocation, onCitySelect }) => {
     // Angle: atan2 of direction + 45° because emoji ✈ naturally points NE
     const angle = Math.atan2(end.top - start.top, end.left - start.left) + Math.PI / 4;
 
-    setLine({ startX: start.left, startY: start.top, endX: end.left, endY: end.top });
-    setPlanePos({ x: start.left, y: start.top, angle });
+    const sX = toPct(start.left, DESIGN_WIDTH);
+    const sY = toPct(start.top, DESIGN_HEIGHT);
+    const eX = toPct(end.left, DESIGN_WIDTH);
+    const eY = toPct(end.top, DESIGN_HEIGHT);
+
+    setLine({ startX: sX, startY: sY, endX: eX, endY: eY });
+    setPlanePos({ x: sX, y: sY, angle });
 
     // Kick off CSS transition
     requestAnimationFrame(() => {
       setTimeout(() => {
-        setPlanePos({ x: end.left, y: end.top, angle });
+        setPlanePos({ x: eX, y: eY, angle });
       }, 80);
     });
 
@@ -77,8 +93,8 @@ const MapView: React.FC<MapViewProps> = ({ currentLocation, onCitySelect }) => {
         return (
           <CityButton
             key={city.name}
-            top={city.top}
-            left={city.left}
+            top={toPct(city.top, DESIGN_HEIGHT)}
+            left={toPct(city.left, DESIGN_WIDTH)}
             $isCurrent={isCurrent}
             onClick={() => handleCitySelect(city.name)}
             title={city.name}
@@ -103,7 +119,7 @@ const MapView: React.FC<MapViewProps> = ({ currentLocation, onCitySelect }) => {
       {planePos && (
         <PlaneIcon
           angle={planePos.angle}
-          style={{ top: planePos.y, left: planePos.x }}
+          style={{ top: `${planePos.y}%`, left: `${planePos.x}%` }}
         >
           ✈️
         </PlaneIcon>
