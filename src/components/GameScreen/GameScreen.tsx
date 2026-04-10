@@ -435,6 +435,7 @@ const GameScreen: React.FC = () => {
               </button>
             </GameOverlay>
           )}
+        </RightColumn>
         </MainContentArea>
       </ScreenWrapper>
     </StyledGameScreen>
