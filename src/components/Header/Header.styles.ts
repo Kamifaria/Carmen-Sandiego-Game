@@ -1,10 +1,5 @@
 import styled from "styled-components";
 
-// -- Wrappers for the Typewriter effect
-export const TypistWrapper = styled.div`
-  font-size: 1.1rem;
-`;
-
 // -- Main Menu Bar (High-Tech FBI Console)
 export const Header = styled.div`
   width: 100%;
@@ -44,129 +39,153 @@ export const HeaderItem = styled.div<{ isSelected?: boolean }>`
   }
 `;
 
-// -- High-Tech Dropdown
-export const Dropdown = styled.div<{ show: boolean }>`
-  position: absolute;
-  top: calc(100% + 5px);
-  left: 0;
-  background: rgba(5, 14, 20, 0.95);
-  backdrop-filter: blur(8px);
-  border: 1px solid #00ffcc;
-  box-shadow: 0 8px 25px rgba(0, 255, 204, 0.2);
-  min-width: 220px;
-  display: ${({ show }) => (show ? "flex" : "none")};
-  flex-direction: column;
-  z-index: 20;
-  padding: 8px 0;
-  border-radius: 4px;
-`;
-
-export const DropdownItem = styled.div`
-  font-size: 0.95rem;
-  padding: 10px 18px;
-  cursor: pointer;
-  color: #cce0ee;
-  font-family: "Courier New", monospace;
-  letter-spacing: 1px;
-  text-transform: uppercase;
-  transition: all 0.2s;
-
-  &:hover {
-    background-color: rgba(0, 255, 204, 0.2);
-    color: #ffffff;
-    padding-left: 24px;
-  }
-`;
-
-// -- Dossier Modal Overlay (Sleek Holographic Panel)
+// -- Dossier Full Screen Modal --
 export const ModalBackground = styled.div`
-  position: absolute;
+  position: fixed;
   inset: 0; 
-  background: radial-gradient(circle at center, rgba(0, 15, 25, 0.8) 0%, rgba(0, 0, 0, 0.95) 100%);
+  background: radial-gradient(circle at center, rgba(0, 15, 25, 0.95) 0%, rgba(0, 0, 0, 1) 100%);
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 50;
-  backdrop-filter: blur(5px);
+  z-index: 9999;
+  backdrop-filter: blur(10px);
 `;
 
-export const ModalContainer = styled.div`
+export const FullScreenModal = styled.div`
   display: flex;
   flex-direction: column;
-  background: linear-gradient(135deg, rgba(11, 31, 42, 0.9) 0%, rgba(5, 14, 20, 0.95) 100%);
-  width: 550px;
-  max-width: 90%;
-  max-height: 80%;
+  width: 95vw;
+  height: 95vh;
+  margin: auto;
   border: 1px solid #00ffcc;
-  box-shadow: 0 0 30px rgba(0, 255, 204, 0.15), inset 0 0 20px rgba(0, 0, 0, 0.8);
+  box-shadow: 0 0 40px rgba(0, 255, 204, 0.2), inset 0 0 20px rgba(0, 0, 0, 0.9);
+  background: linear-gradient(135deg, rgba(8, 20, 25, 0.95) 0%, rgba(0, 5, 10, 0.95) 100%);
+  border-radius: 4px;
   overflow: hidden;
-  border-radius: 8px;
-  position: relative;
+`;
 
-  &::before {
-    content: "INTERPOL MAINFRAME // SECURE LINK";
-    position: absolute;
-    top: 0; left: 0; right: 0;
-    padding: 4px 15px;
-    background: #00ffcc;
-    color: #000;
+export const ModalTopBar = styled.div`
+  width: 100%;
+  padding: 15px 25px;
+  border-bottom: 2px solid #00ffcc;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  
+  h1 {
+    color: #00ffcc;
+    margin: 0;
     font-family: "Courier New", monospace;
-    font-size: 0.75rem;
-    font-weight: bold;
-    letter-spacing: 3px;
-    z-index: 2;
+    font-size: 1.8rem;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+  }
+  
+  button {
+    background: transparent;
+    border: 1px solid #00ffcc;
+    color: #00ffcc;
+    font-size: 1.5rem;
+    cursor: pointer;
+    padding: 0 10px;
+    border-radius: 4px;
+    &:hover { background: rgba(0, 255, 204, 0.2); color: #fff; }
   }
 `;
 
-export const ModalBody = styled.div`
+export const ModalSplitView = styled.div`
   display: flex;
-  flex-direction: row;
-  padding: 40px 20px 20px 20px;
-  border-bottom: 1px solid rgba(0, 255, 204, 0.3);
+  flex: 1;
+  overflow: hidden;
 `;
 
-export const ImageContainer = styled.div`
-  flex: 0 0 140px;
+export const LeftListPanel = styled.div`
+  flex: 0 0 280px;
+  border-right: 1px solid #00ffcc;
+  overflow-y: auto;
+  padding: 20px 0;
   display: flex;
-  justify-content: center;
-  align-items: flex-start;
+  flex-direction: column;
+  background: rgba(0,0,0,0.4);
+
+  &::-webkit-scrollbar { width: 4px; }
+  &::-webkit-scrollbar-track { background: transparent; }
+  &::-webkit-scrollbar-thumb { background: #00ffcc; }
 `;
 
-export const Image = styled.img`
-  width: 120px;
-  height: 120px;
-  object-fit: contain;
+export const ListPanelItem = styled.div<{ isSelected: boolean }>`
+  padding: 15px 20px;
+  margin: 0 10px 10px 10px;
+  font-family: "Courier New", monospace;
+  font-size: 1.1rem;
+  font-weight: bold;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  cursor: pointer;
+  color: ${({ isSelected }) => (isSelected ? "#ffffff" : "#00ffcc")};
+  background: ${({ isSelected }) => (isSelected ? "rgba(0, 255, 204, 0.15)" : "transparent")};
+  border: 1px solid ${({ isSelected }) => (isSelected ? "#00ffcc" : "transparent")};
+  border-radius: 4px;
+  transition: all 0.2s;
+
+  &:hover {
+    background: rgba(0, 255, 204, 0.1);
+    color: #ffffff;
+  }
+`;
+
+export const RightDetailPanel = styled.div`
+  flex: 1;
+  padding: 30px 40px;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+`;
+
+export const TopDetailsRow = styled.div`
+  display: flex;
+  gap: 40px;
+  margin-bottom: 30px;
+`;
+
+export const BigImage = styled.img`
+  width: 250px;
+  height: 250px;
+  object-fit: cover;
   border: 2px solid #00ffcc;
-  box-shadow: 0 0 15px rgba(0, 255, 204, 0.3);
-  background: rgba(0, 0, 0, 0.5);
-  filter: hue-rotate(180deg) contrast(1.2);
+  box-shadow: 0 0 25px rgba(0, 255, 204, 0.3);
+  filter: contrast(1.1);
 `;
 
-export const ContentContainer = styled.div`
+export const SpecsColumn = styled.div`
   flex: 1;
   display: flex;
   flex-direction: column;
-  padding-left: 20px;
-  color: #00ffcc;
-`;
-
-export const ModalContent = styled.div`
+  justify-content: center;
+  gap: 12px;
   font-family: "Courier New", monospace;
-  font-size: 1rem;
+  font-size: 1.3rem;
+  letter-spacing: 2px;
+  color: #cce0ee;
 
-  p { margin: 0 0 8px 0; letter-spacing: 1px; }
-  strong { color: #ffffff; margin-right: 6px; text-shadow: 0 0 5px rgba(255,255,255,0.5); }
+  .label { color: #00ffcc; width: 180px; display: inline-block; font-weight: bold; }
+  .value { color: #ffffff; text-shadow: 0 0 5px rgba(255,255,255,0.4); text-transform: uppercase; }
 `;
 
-export const ModalFooter = styled.div<{ isVisible: boolean }>`
+export const SystemLogBox = styled.div`
+  border: 1px solid rgba(0, 255, 204, 0.5);
   background: rgba(0, 255, 204, 0.05);
-  color: #ff4444;
-  font-family: "Courier New", monospace;
-  font-size: 1rem;
   padding: 20px;
-  opacity: ${({ isVisible }) => (isVisible ? 1 : 0)};
-  transition: opacity 0.5s ease-out;
+  min-height: 120px;
+  font-family: "Courier New", monospace;
+  font-size: 1.1rem;
+  color: #00ffcc;
+  letter-spacing: 1px;
+  line-height: 1.5;
+  box-shadow: inset 0 0 10px rgba(0, 255, 204, 0.1);
+`;
 
-  p { margin: 0 0 6px 0; letter-spacing: 1px; }
-  strong { color: #ffffff; margin-right: 6px; }
+export const TypistWrapper = styled.div`
+  display: inline-block;
+  white-space: pre-wrap;
 `;

@@ -1,20 +1,21 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import { Trupe, trupeiros } from "../../utils/trupeUtils";
 
 import {
-  TypistWrapper,
   Header,
   HeaderItem,
-  Dropdown,
-  DropdownItem,
   ModalBackground,
-  ModalContainer,
-  ModalBody,
-  ImageContainer,
-  Image,
-  ContentContainer,
-  ModalContent,
-  ModalFooter,
+  FullScreenModal,
+  ModalTopBar,
+  ModalSplitView,
+  LeftListPanel,
+  ListPanelItem,
+  RightDetailPanel,
+  TopDetailsRow,
+  BigImage,
+  SpecsColumn,
+  SystemLogBox,
+  TypistWrapper
 } from "./Header.styles";
 
 // Custom simple typewriter hook to avoid react-typist bugs
@@ -41,36 +42,16 @@ const useTypewriter = (text: string, speed = 25) => {
 };
 
 export const HeaderComponent: React.FC = () => {
-  const [showDropdown, setShowDropdown] = useState(false);
+  const [showDatabase, setShowDatabase] = useState(false);
   const [selectedTrupeiro, setSelectedTrupeiro] = useState<Trupe | null>(null);
 
-  const modalRef = useRef<HTMLDivElement>(null);
-
-  const toggleDropdown = () => {
-    setShowDropdown((prev) => !prev);
+  const toggleDatabase = () => {
+    setShowDatabase((prev) => {
+      const next = !prev;
+      if (next && !selectedTrupeiro) setSelectedTrupeiro(trupeiros[0]);
+      return next;
+    });
   };
-
-  const handleDropdownItemClick = (e: React.MouseEvent, suspeito: Trupe) => {
-    e.stopPropagation();
-    setSelectedTrupeiro(suspeito);
-    setShowDropdown(false);
-  };
-
-  const handleClickOutside = (e: MouseEvent) => {
-    // If we click outside the modal, close it
-    if (modalRef.current && !modalRef.current.contains(e.target as Node)) {
-      setSelectedTrupeiro(null);
-    }
-  };
-
-  useEffect(() => {
-    if (selectedTrupeiro) {
-      document.addEventListener("mousedown", handleClickOutside);
-    } else {
-      document.removeEventListener("mousedown", handleClickOutside);
-    }
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, [selectedTrupeiro]);
 
   return (
     <>
@@ -78,70 +59,75 @@ export const HeaderComponent: React.FC = () => {
         <HeaderItem>Jogo</HeaderItem>
         <HeaderItem>Opções</HeaderItem>
         <HeaderItem>Acme</HeaderItem>
-        <HeaderItem onClick={toggleDropdown} isSelected={showDropdown}>
+        <HeaderItem onClick={toggleDatabase} isSelected={showDatabase}>
           Dossiês
-          <Dropdown show={showDropdown}>
-            {trupeiros.map((suspeito: Trupe) => (
-              <DropdownItem
-                key={suspeito.nome}
-                onClick={(e) => handleDropdownItemClick(e, suspeito)}
-              >
-                {suspeito.nome}
-              </DropdownItem>
-            ))}
-          </Dropdown>
         </HeaderItem>
       </Header>
 
-      {selectedTrupeiro && (
-        <ModalBackground>
-          <ModalContainer ref={modalRef}>
-            <ModalBody>
-              <ImageContainer>
-                <Image src={selectedTrupeiro.imagem} alt={selectedTrupeiro.nome} />
-              </ImageContainer>
-              <ContentContainer>
-                <ModalContent>
-                  <DossierDetails suspeito={selectedTrupeiro} />
-                </ModalContent>
-              </ContentContainer>
-            </ModalBody>
-          </ModalContainer>
+      {showDatabase && selectedTrupeiro && (
+        <ModalBackground onClick={() => setShowDatabase(false)}>
+          <FullScreenModal onClick={(e) => e.stopPropagation()}>
+            <ModalTopBar>
+              <h1>INTERPOL CRIMESTOPPERS: FICHAS CRIMINAIS</h1>
+              <button onClick={() => setShowDatabase(false)}>X</button>
+            </ModalTopBar>
+            
+            <ModalSplitView>
+              {/* Left Panel: List of Names */}
+              <LeftListPanel>
+                {trupeiros.map((suspeito: Trupe) => (
+                  <ListPanelItem
+                    key={suspeito.nome}
+                    isSelected={selectedTrupeiro.nome === suspeito.nome}
+                    onClick={() => setSelectedTrupeiro(suspeito)}
+                  >
+                    {suspeito.nome}
+                  </ListPanelItem>
+                ))}
+              </LeftListPanel>
+              
+              {/* Right Panel: Details of selected */}
+              <RightDetailPanel>
+                <TopDetailsRow>
+                  <BigImage src={selectedTrupeiro.imagem} alt={selectedTrupeiro.nome} />
+                  
+                  <SpecsColumn>
+                    <div><span className="label">NOME:</span> <span className="value">{selectedTrupeiro.nome}</span></div>
+                    <div><span className="label">SEXO:</span> <span className="value">{selectedTrupeiro.sexo}</span></div>
+                    <div><span className="label">IDADE:</span> <span className="value">{selectedTrupeiro.idade}</span></div>
+                    <div><span className="label">HOBBY:</span> <span className="value">{selectedTrupeiro.hobby}</span></div>
+                    <div><span className="label">CABELO:</span> <span className="value">{selectedTrupeiro.cabelo}</span></div>
+                    <div><span className="label">VEÍCULO:</span> <span className="value">{selectedTrupeiro.veiculo}</span></div>
+                    <div><span className="label">CARACTERÍSTICA:</span> <span className="value">{selectedTrupeiro.caracteristica}</span></div>
+                  </SpecsColumn>
+                </TopDetailsRow>
+
+                <SystemLogBox>
+                  <SystemLogWriter nome={selectedTrupeiro.nome} outro={selectedTrupeiro.outro} />
+                </SystemLogBox>
+              </RightDetailPanel>
+            </ModalSplitView>
+          </FullScreenModal>
         </ModalBackground>
       )}
     </>
   );
 };
 
-// Extracted to manage its own typewriter state cleanly
-const DossierDetails: React.FC<{ suspeito: Trupe }> = ({ suspeito }) => {
-  const detailsText = `Name: ${suspeito.nome}
-Sex: ${suspeito.sexo}
-Age: ${suspeito.idade || "Desconhecida"}
-Hobby: ${suspeito.hobby}  
-Hair: ${suspeito.cabelo}
-Vehicle: ${suspeito.veiculo}`;
+const SystemLogWriter: React.FC<{ nome: string; outro: string }> = ({ nome, outro }) => {
+  const text = \`SISTEMA INTERPOL ACESSANDO REGISTROS DE \${nome.toUpperCase()}...
+PONTOS DE INTERESSE DETECTADOS:
+>> \${outro.toUpperCase()}
 
-  const { displayed: topDisplayed, done: topDone } = useTypewriter(detailsText, 20);
+[REGISTRO FINALIZADO]\`;
 
-  const footerText = `Feature: ${suspeito.caracteristica}
-Other: ${suspeito.outro || "N/A"}`;
-  const { displayed: bottomDisplayed } = useTypewriter(topDone ? footerText : "", 20);
+  const { displayed, done } = useTypewriter(text, 15);
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
-      <TypistWrapper style={{ whiteSpace: "pre-wrap" }}>
-        {topDisplayed}
-        {!topDone && <span style={{ animation: "flicker 1s infinite" }}>_</span>}
-      </TypistWrapper>
-
-      <ModalFooter isVisible={topDone} style={{ marginTop: 'auto' }}>
-        <TypistWrapper style={{ whiteSpace: "pre-wrap" }}>
-          {bottomDisplayed}
-          {topDone && <span style={{ animation: "flicker 1s infinite" }}>_</span>}
-        </TypistWrapper>
-      </ModalFooter>
-    </div>
+    <TypistWrapper>
+      {displayed}
+      {!done && <span style={{ animation: "flicker 1s infinite" }}>█</span>}
+    </TypistWrapper>
   );
 };
 
