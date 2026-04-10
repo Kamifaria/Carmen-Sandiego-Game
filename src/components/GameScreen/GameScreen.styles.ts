@@ -67,16 +67,18 @@ export const ScreenWrapper = styled.div`
 // ─────────────────────────────────────────────
 // LEFT COLUMN — typewriter intro area
 // ─────────────────────────────────────────────
-export const LeftColumn = styled.div<{ hidden?: boolean }>`
+export const LeftColumn = styled.div<{ $isHidden?: boolean }>`
   position: relative;
-  flex: 0 0 380px;
-  width: 380px;
+  flex: ${({ $isHidden }) => ($isHidden ? "0 0 0px" : "0 0 380px")};
+  width: ${({ $isHidden }) => ($isHidden ? "0px" : "380px")};
+  opacity: ${({ $isHidden }) => ($isHidden ? 0 : 1)};
   height: 100%;
-  display: ${({ hidden }) => (hidden ? "none" : "flex")};
+  display: flex;
   flex-direction: column;
   background-color: #20646c;
-  border-right: 2px solid #2a5f6b;
-  transition: all 0.4s ease;
+  border-right: ${({ $isHidden }) => ($isHidden ? "0px" : "2px solid #2a5f6b")};
+  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow: hidden;
 `;
 
 export const LeftColumnImage = styled.img<{ isVisible: boolean }>`

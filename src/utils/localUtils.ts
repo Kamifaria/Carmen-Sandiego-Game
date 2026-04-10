@@ -33,7 +33,7 @@ export const locationsData: LocationData[] = [
   ];
 
   export const isLeftPosition = (cityName: string): boolean => {
-    const citiesWithLeftName = ['GUADALAJARA', 'BOGOTÁ', 'LIMA', 'PARIS', 'LONDRES', 'RABAT', 'SEUL'];
+    const citiesWithLeftName = ['GUADALAJARA', 'BOGOTÁ', 'LIMA', 'PARIS', 'LONDRES', 'RABAT', 'SEUL', 'MOSCOU', 'DUBAI', 'TÓQUIO', 'PEQUIM', 'MELBOURNE', 'HONG KONG'];
     return citiesWithLeftName.includes(cityName);
   };
   

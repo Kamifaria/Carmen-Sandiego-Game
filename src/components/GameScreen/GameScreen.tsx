@@ -1,7 +1,5 @@
 import React, { useState, useEffect, useCallback, useRef, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
-import Typist from "react-typist";
-import "react-typist/dist/Typist.css";
 
 import { useAuth } from "../../services/AuthContext";
 import { pickRandomLocation, LocationData, locationsData } from "../../utils/localUtils";
@@ -31,6 +29,32 @@ import {
   ButtonContainerWrapper,
   GameOverlay,
 } from "./GameScreen.styles";
+
+// ─── Custom Typewriter ──────────────────────────────────────────────
+const TypewriterText: React.FC<{ text: string; onDone: () => void }> = ({ text, onDone }) => {
+  const [displayed, setDisplayed] = useState("");
+  
+  useEffect(() => {
+    setDisplayed("");
+    let i = 0;
+    const t = setInterval(() => {
+      setDisplayed(text.slice(0, i + 1));
+      i++;
+      if (i >= text.length) {
+        clearInterval(t);
+        onDone();
+      }
+    }, 30);
+    return () => clearInterval(t);
+  }, [text, onDone]);
+
+  return (
+    <span>
+      {displayed}
+      <span style={{ animation: "flicker 1s infinite" }}>|</span>
+    </span>
+  );
+};
 
 // ─── helpers ────────────────────────────────────────────────────────
 const DAYS = ["Seg", "Ter", "Qua", "Qui", "Sex", "Sáb", "Dom"];
@@ -306,22 +330,19 @@ const GameScreen: React.FC = () => {
       <HeaderComponent />
 
       <ScreenWrapper>
-        {/* LEFT: typewriter intro — hidden once complete */}
-        <LeftColumn hidden={introComplete}>
+        {/* LEFT: typewriter intro — hides smoothly once complete */}
+        <LeftColumn $isHidden={introComplete}>
           <TypingArea>
             <MessageContainer>
               {messagesToShow.slice(0, -1).map((msg, i) => (
                 <TypingAreaItem key={i}>{msg}</TypingAreaItem>
               ))}
               {messagesToShow.length > 0 && (
-                <Typist
+                <TypewriterText
                   key={step.toString()}
-                  cursor={{ show: true, blink: true, element: "|" }}
-                  onTypingDone={() => setReadyForNext(true)}
-                  avgTypingDelay={40}
-                >
-                  {messagesToShow[messagesToShow.length - 1]}
-                </Typist>
+                  text={messagesToShow[messagesToShow.length - 1]}
+                  onDone={() => setReadyForNext(true)}
+                />
               )}
             </MessageContainer>
             <TypewriterContainer isTyping={!readyForNext} />
