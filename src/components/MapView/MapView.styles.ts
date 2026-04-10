@@ -1,68 +1,92 @@
-// MapView.styles.ts
 import styled from 'styled-components';
 
 export const MapContainer = styled.div`
-  position: relative; /* Change from absolute so it fills correctly */
+  position: relative;
   width: 100%;
   height: 100%;
-  z-index: 3;
+  background-color: #061523;
   overflow: hidden;
-  background-color: #0b1a26;
 `;
 
 export const MapImage = styled.img`
   width: 100%;
   height: 100%;
-  object-fit: cover;
-  filter: opacity(0.85);
+  object-fit: fill;
+  opacity: 0.75;
+  display: block;
 `;
 
-export const CityButton = styled.button<{ top: number; left: number }>`
+export const CityButton = styled.button<{ top: number; left: number; $isCurrent: boolean }>`
   position: absolute;
   top: ${props => props.top}px;
   left: ${props => props.left}px;
   transform: translate(-50%, -50%);
   margin: 0;
   padding: 0;
-  font-size: 1.2rem;
   cursor: pointer;
-  background-color: red;
+  background: transparent;
   border: none;
   display: flex;
   align-items: center;
-  color: white;
+  z-index: 5;
+
+  .dot {
+    width: ${props => props.$isCurrent ? '14px' : '9px'};
+    height: ${props => props.$isCurrent ? '14px' : '9px'};
+    border-radius: 50%;
+    background-color: ${props => props.$isCurrent ? '#ffd700' : '#ff3333'};
+    box-shadow: ${props => props.$isCurrent
+      ? '0 0 0 3px rgba(255,215,0,0.3), 0 0 12px #ffd700'
+      : '0 0 6px rgba(255,50,50,0.7)'};
+    transition: all 0.3s ease;
+  }
+
+  &:hover .dot {
+    background-color: #ff8800;
+    box-shadow: 0 0 12px #ff8800;
+    transform: scale(1.3);
+  }
 `;
 
-export const CityName = styled.span<{ leftPosition: boolean }>`
+export const CityName = styled.span<{ leftPosition: boolean; $isCurrent: boolean }>`
   position: absolute;
-  ${props => props.leftPosition ? 'right: calc(100% + 10px)' : 'left: calc(100% + 10px)'};
+  ${props => props.leftPosition ? 'right: calc(100% + 8px)' : 'left: calc(100% + 8px)'};
   top: 50%;
   transform: translateY(-50%);
-  color: white;
+  color: ${props => props.$isCurrent ? '#ffd700' : '#cce8ff'};
+  font-family: "Courier New", monospace;
+  font-size: 0.7rem;
+  font-weight: ${props => props.$isCurrent ? 'bold' : 'normal'};
   white-space: nowrap;
-  background-color: black;
+  background: rgba(0,0,0,0.7);
+  padding: 1px 5px;
+  border-radius: 2px;
+  letter-spacing: 0.5px;
+  pointer-events: none;
 `;
 
 export const Line = styled.div<{ startX: number; startY: number; endX: number; endY: number }>`
   position: absolute;
-  border-top: 2px dashed red;
+  border-top: 2px dashed rgba(255, 100, 100, 0.7);
   width: ${props => Math.sqrt((props.endX - props.startX) ** 2 + (props.endY - props.startY) ** 2)}px;
   top: ${props => props.startY}px;
   left: ${props => props.startX}px;
   transform: rotate(${props => Math.atan2(props.endY - props.startY, props.endX - props.startX)}rad);
   transform-origin: 0 0;
+  z-index: 4;
 `;
 
 export const PlaneIcon = styled.div<{ angle: number }>`
   position: absolute;
-  width: 40px;
-  height: 40px;
-  background-image: url('https://cdn-icons-png.flaticon.com/512/3135/3135715.png');
-  background-size: contain;
-  background-repeat: no-repeat;
-  background-position: center;
+  width: 36px;
+  height: 36px;
+  font-size: 28px;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   transform: translate(-50%, -50%) rotate(${props => props.angle}rad);
   transition: top 2s ease-in-out, left 2s ease-in-out;
   z-index: 10;
-  filter: invert(1); /* makes the black plane icon white */
+  filter: drop-shadow(0 0 6px rgba(255,200,0,0.8));
 `;

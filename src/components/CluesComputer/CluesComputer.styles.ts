@@ -1,154 +1,159 @@
 import styled from "styled-components";
 
+/* ── Outer shell fills OptionsContainer 100% ────────────────────────*/
 export const StyledCluesComputer = styled.div`
-  position: absolute;
-  display: flex;
-  justify-content: center;
   width: 100%;
   height: 100%;
-  font-family: "Pixelify Sans", sans-serif;
-  background-color: black;
-  border: 2px solid grey;
-`;
-
-export const CluesContainer = styled.div`
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
-  width: 90%;
-  max-width: 800px;
-  max-height: 80vh;
-  margin: 0 auto;
-  padding: 20px 5px;
-  color: #fff;
-  background-color: black;
-  border: 20px solid #bb9469;
-  border-radius: 10px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+  background: #0a0a0a;
+  font-family: "Courier New", Courier, monospace;
+  overflow: hidden;
 `;
 
+/* ── Top bar ─────────────────────────────────────────────────────────*/
 export const ScreenHeader = styled.div`
+  flex-shrink: 0;
   width: 100%;
-  text-align: center;
-  padding: 10px 0px;
-  font-size: 3rem;
-  background-color: #222;
-  border-bottom: 2px solid #555;
+  padding: 10px 20px;
+  background: #111;
+  border-bottom: 2px solid #1a4a5a;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: #00ff88;
+  font-family: "Pixelify Sans", sans-serif;
+  font-size: 1.4rem;
+  letter-spacing: 2px;
+
+  &::before {
+    content: "🔒";
+    font-size: 1.2rem;
+  }
 `;
 
+/* ── Scrollable body ─────────────────────────────────────────────────*/
+export const CluesContainer = styled.div`
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  padding: 12px 18px;
+  gap: 6px;
+
+  &::-webkit-scrollbar { width: 6px; }
+  &::-webkit-scrollbar-track { background: #111; }
+  &::-webkit-scrollbar-thumb { background: #1a4a5a; border-radius: 3px; }
+`;
+
+/* ── Each clue filter row ────────────────────────────────────────────*/
 export const ClueButton = styled.button`
   display: flex;
   justify-content: space-between;
   align-items: center;
   width: 100%;
-  box-sizing: border-box;
-  padding: 10px 20px;
-  font-family: "Pixelify Sans", sans-serif;
-  font-size: 1.5rem;
-  color: #fff;
+  padding: 8px 16px;
+  background: #111a22;
+  border: 1px solid #1e3a4a;
+  border-radius: 4px;
+  color: #cce0ee;
+  font-family: "Courier New", monospace;
+  font-size: 0.95rem;
   cursor: pointer;
-  background-color: black;
-  border: 2px solid #555;
-  border-radius: 5px;
-  transition: background-color 0.3s;
+  transition: background 0.2s;
 
-  &:hover {
-    background-color: #555;
-  }
+  &:hover { background: #1a2e3e; }
 
-  .clue-type {
-    margin-right: auto;
-  }
-
-  .clue-option {
-    color: yellow;
-    text-align: center;
-  }
+  .clue-type { color: #7ab8cc; text-transform: uppercase; letter-spacing: 1px; }
+  .clue-option { color: #ffd700; font-weight: bold; }
 `;
 
+/* ── PESQUISAR button ────────────────────────────────────────────────*/
 export const FilterButton = styled.button`
+  flex-shrink: 0;
   width: 100%;
-  align-self: flex-start;
-  padding: 15px 20px;
-  margin-top: 20px;
-  font-family: "Pixelify Sans", sans-serif;
-  font-size: 1.5rem;
+  padding: 10px;
+  margin-top: 4px;
+  background: linear-gradient(135deg, #006400, #00a000);
+  border: none;
+  border-radius: 4px;
   color: #fff;
+  font-family: "Pixelify Sans", sans-serif;
+  font-size: 1.1rem;
+  letter-spacing: 2px;
   cursor: pointer;
-  background-color: #008000;
-  border: 2px solid #006400;
-  border-radius: 5px;
-  transition: background-color 0.3s;
+  transition: opacity 0.2s;
+  &:hover { opacity: 0.85; }
 `;
 
+/* ── Suspects gallery ────────────────────────────────────────────────*/
 export const SuspectsGallery = styled.div`
+  flex: 1;
   display: flex;
   flex-wrap: wrap;
-  justify-content: center;
-  align-items: flex-start;
+  align-content: flex-start;
+  justify-content: flex-start;
+  gap: 14px;
+  padding: 14px;
   overflow-y: auto;
-  gap: 20px;
-  margin-top: 20px;
-  padding: 20px;
-  width: 100%;
-  max-height: 60vh;
-  background-color: #222;
-  border: 2px dashed #fcd116;
-  border-radius: 5px;
-  box-sizing: border-box;
+  background: #0e1a22;
+  border: 1px dashed #1a4a5a;
+  border-radius: 4px;
+  min-height: 0;
 
-  /* Custom scrollbar for better look */
-  &::-webkit-scrollbar {
-    width: 10px;
-  }
-  &::-webkit-scrollbar-track {
-    background: #111;
-  }
-  &::-webkit-scrollbar-thumb {
-    background: #fcd116;
-  }
+  &::-webkit-scrollbar { width: 8px; }
+  &::-webkit-scrollbar-track { background: #0a0a0a; }
+  &::-webkit-scrollbar-thumb { background: #ffd700; border-radius: 4px; }
 `;
 
+/* ── Single suspect card ─────────────────────────────────────────────*/
 export const SuspectCard = styled.div<{ $isWarrant: boolean }>`
   position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
-  width: 140px;
-  background-color: #f4e8c1;
-  border: 2px solid #000;
-  padding: 10px;
-  box-shadow: 4px 4px 10px rgba(0,0,0,0.6);
-  font-family: "Courier New", Courier, monospace;
-  
+  width: 130px;
+  background: #f0e6cc;
+  border: 2px solid #888;
+  padding: 8px 6px;
+  box-shadow: 3px 3px 8px rgba(0,0,0,0.7);
+  cursor: default;
+
   .photo {
-    width: 120px;
-    height: 120px;
+    width: 110px;
+    height: 110px;
     object-fit: cover;
-    border: 2px solid black;
-    filter: sepia(0.6) contrast(1.2) grayscale(0.5); 
+    border: 2px solid #555;
+    filter: sepia(0.5) contrast(1.1) grayscale(0.4);
   }
 
   .name {
-    color: black;
-    font-size: 1.1rem;
+    margin-top: 6px;
+    color: #111;
+    font-family: "Courier New", monospace;
+    font-size: 0.75rem;
     font-weight: bold;
-    margin-top: 10px;
     text-align: center;
     text-transform: uppercase;
+    word-break: break-word;
   }
 
+  /* Red stamp: WARRANT */
   .stamp {
-    position: absolute;
-    color: red;
-    border: 4px solid red;
-    transform: rotate(-15deg);
-    font-size: 1.5rem;
-    font-weight: bold;
-    top: 40px;
-    background: rgba(255,255,255,0.85);
-    padding: 4px;
-    z-index: 2;
     display: ${props => props.$isWarrant ? 'block' : 'none'};
+    position: absolute;
+    top: 28px;
+    left: 5px;
+    color: #cc0000;
+    border: 3px solid #cc0000;
+    padding: 2px 6px;
+    font-family: "Courier New", monospace;
+    font-size: 1rem;
+    font-weight: 900;
+    transform: rotate(-18deg);
+    background: rgba(255,255,255,0.8);
+    letter-spacing: 1px;
+    z-index: 2;
+    pointer-events: none;
   }
 `;

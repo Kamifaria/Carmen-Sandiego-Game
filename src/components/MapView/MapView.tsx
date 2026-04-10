@@ -15,82 +15,75 @@ interface MapViewProps {
   onCitySelect: (city: string) => void;
 }
 
-const MapView: React.FC<MapViewProps> = ({ selectedCity, currentLocation, onCitySelect }) => {
-  const [line, setLine] = useState<{ startX: number, startY: number, endX: number, endY: number } | null>(null);
-  
-  // Animation states
-  const [planePos, setPlanePos] = useState<{ x: number, y: number, angle: number } | null>(null);
+const MapView: React.FC<MapViewProps> = ({ currentLocation, onCitySelect }) => {
+  const [line, setLine] = useState<{ startX: number; startY: number; endX: number; endY: number } | null>(null);
+  const [planePos, setPlanePos] = useState<{ x: number; y: number; angle: number } | null>(null);
   const [isFlying, setIsFlying] = useState(false);
 
+  // Place plane at current city on load / city change
   useEffect(() => {
-    if (currentLocation && !isFlying) {
-      const startCity = locationsData.find(cityObj => cityObj.name === currentLocation.name);
-      if (startCity) {
-        setPlanePos({ x: startCity.left, y: startCity.top, angle: 0 });
-      }
+    if (!isFlying) {
+      const city = locationsData.find(c => c.name === currentLocation.name);
+      if (city) setPlanePos({ x: city.left, y: city.top, angle: 0 });
     }
   }, [currentLocation, isFlying]);
 
-  const handleCitySelect = (city: string) => {
-    if (isFlying) return; // Prevent double click
+  const handleCitySelect = (cityName: string) => {
+    if (isFlying) return;
+    if (cityName === currentLocation.name) return; // can't go to same city
 
-    const startCity = locationsData.find(cityObj => cityObj.name === currentLocation.name);
-    const endCity = locationsData.find(cityObj => cityObj.name === city);
+    const start = locationsData.find(c => c.name === currentLocation.name);
+    const end = locationsData.find(c => c.name === cityName);
+    if (!start || !end) return;
 
-    if (startCity && endCity) {
-      setIsFlying(true);
-      
-      // Calculate angle for the airplane to point to destination
-      // Adding Math.PI/4 (45deg) because most airplane icons point to top-right diagonally by default!
-      const angle = Math.atan2(endCity.top - startCity.top, endCity.left - startCity.left) + (Math.PI / 4);
+    setIsFlying(true);
 
-      setLine({
-        startX: startCity.left,
-        startY: startCity.top,
-        endX: endCity.left,
-        endY: endCity.top,
-      });
+    // Angle: atan2 of direction + 45° because emoji ✈ naturally points NE
+    const angle = Math.atan2(end.top - start.top, end.left - start.left) + Math.PI / 4;
 
-      // Prepare airplane base rotation instantly
-      setPlanePos({ x: startCity.left, y: startCity.top, angle: angle });
+    setLine({ startX: start.left, startY: start.top, endX: end.left, endY: end.top });
+    setPlanePos({ x: start.left, y: start.top, angle });
 
-      // In the next tick, change coordinates to trigger CSS transition
+    // Kick off CSS transition
+    requestAnimationFrame(() => {
       setTimeout(() => {
-        setPlanePos({ x: endCity.left, y: endCity.top, angle: angle });
-      }, 50);
+        setPlanePos({ x: end.left, y: end.top, angle });
+      }, 80);
+    });
 
-      // Wait for flight CSS animation (2s) to finish before notifying parent
-      setTimeout(() => {
-        setIsFlying(false);
-        setLine(null);
-        onCitySelect(city);
-      }, 2050);
-    }
+    // After flight finishes notify parent
+    setTimeout(() => {
+      setIsFlying(false);
+      setLine(null);
+      onCitySelect(cityName);
+    }, 2100);
   };
 
   return (
     <MapContainer>
-      <MapImage src="https://img.freepik.com/vetores-gratis/contorno-de-mapa-mundial-em-fundo-preto_1017-46153.jpg" alt="Mapa Mundi" />
-      
-      {locationsData.map(city => (
-        <React.Fragment key={city.name}>
+      <MapImage
+        src="https://img.freepik.com/vetores-gratis/contorno-de-mapa-mundial-em-fundo-preto_1017-46153.jpg"
+        alt="Mapa Mundi"
+      />
+
+      {locationsData.map(city => {
+        const isCurrent = city.name === currentLocation.name;
+        return (
           <CityButton
+            key={city.name}
             top={city.top}
             left={city.left}
+            $isCurrent={isCurrent}
             onClick={() => handleCitySelect(city.name)}
+            title={city.name}
           >
-            <span style={{
-              display: 'block',
-              width: '10px',
-              height: '10px',
-              borderRadius: '50%',
-              backgroundColor: currentLocation.name === city.name ? 'yellow' : 'red',
-              boxShadow: currentLocation.name === city.name ? '0 0 10px yellow' : 'none'
-            }} />
-            <CityName leftPosition={isLeftPosition(city.name)}>{city.name}</CityName>
+            <span className="dot" />
+            <CityName leftPosition={isLeftPosition(city.name)} $isCurrent={isCurrent}>
+              {city.name}
+            </CityName>
           </CityButton>
-        </React.Fragment>
-      ))}
+        );
+      })}
 
       {line && (
         <Line
@@ -102,10 +95,12 @@ const MapView: React.FC<MapViewProps> = ({ selectedCity, currentLocation, onCity
       )}
 
       {planePos && (
-        <PlaneIcon 
-          angle={planePos.angle} 
-          style={{ top: planePos.y, left: planePos.x }} 
-        />
+        <PlaneIcon
+          angle={planePos.angle}
+          style={{ top: planePos.y, left: planePos.x }}
+        >
+          ✈️
+        </PlaneIcon>
       )}
     </MapContainer>
   );
