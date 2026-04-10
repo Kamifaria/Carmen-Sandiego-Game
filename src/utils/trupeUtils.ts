@@ -64,7 +64,7 @@ export const trupeiros: Trupe[] = [
     caracteristica: "Cicatriz",
     veiculo: "Limousine",
     outro: "Mestra das cartas ilusórias",
-    imagem: "https://api.dicebear.com/7.x/pixel-art/svg?seed=Hisokami",
+    imagem: "https://i.pinimg.com/736x/32/19/22/321922c159bf4070a927a42a0335e8cf.jpg",
   },
   {
     nome: "Jaguatiphinks",
@@ -111,15 +111,15 @@ export const trupeiros: Trupe[] = [
     imagem: "https://api.dicebear.com/7.x/pixel-art/svg?seed=Noshizuko",
   },
   {
-    nome: "Pakunoda",
+    nome: "skye",
     sexo: "Feminino",
-    idade: "28 ANOS",
+    idade: "21 ANOS",
     hobby: "Futebol",
-    cabelo: "Loiro",
+    cabelo: "Preto",
     caracteristica: "Óculos",
     veiculo: "Jipe",
     outro: "Mente afiada para interrogar",
-    imagem: "https://api.dicebear.com/7.x/pixel-art/svg?seed=Pakunoda",
+    imagem: "https://i.pinimg.com/736x/5d/76/89/5d7689d0db3b42ee86f1e1eb84ef03ef.jpg",
   },
   {
     nome: "Kalangolenof",
@@ -155,7 +155,7 @@ export const trupeiros: Trupe[] = [
     imagem: "https://api.dicebear.com/7.x/pixel-art/svg?seed=Weskortopi",
   },
   {
-    nome: "Global View",
+    nome: "Carmen Sandiego trupe",
     sexo: "Feminino",
     idade: "99 ANOS",
     hobby: "Tenis",
@@ -163,6 +163,6 @@ export const trupeiros: Trupe[] = [
     caracteristica: "Joias",
     veiculo: "Conversivel",
     outro: "Pessoa misteriosa, nunca foi vista.",
-    imagem: "https://api.dicebear.com/7.x/pixel-art/svg?seed=GlobalView",
+    imagem: "https://api.dicebear.com/7.x/pixel-art/svg?seed=CarmenSandiego",
   },
 ];
