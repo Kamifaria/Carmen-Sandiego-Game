@@ -27,7 +27,7 @@ const Button: React.FC<ButtonProps> = ({
       onClick={e => { e.stopPropagation(); onClick(); }}
       isSelected={isSelected}
     >
-      <ButtonIcon src={iconSrc} alt={altText} />
+      <ButtonIcon src={iconSrc} alt={altText} isSelected={isSelected} />
       <ButtonText>{buttonText}</ButtonText>
     </ButtonStyled>
   </ButtonContainer>
