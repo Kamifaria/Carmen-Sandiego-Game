@@ -29,7 +29,8 @@ app.use(async (req, res, next) => {
 const userSchema = new mongoose.Schema({
   username: { type: String, required: true, unique: true },
   email: { type: String, required: true, unique: true },
-  password: { type: String, required: true }
+  password: { type: String, required: true },
+  casesResolved: { type: Number, default: 0 }
 });
 const User = mongoose.models.User || mongoose.model('User', userSchema);
 
@@ -66,7 +67,7 @@ app.post('/api/register', async (req, res) => {
       return res.status(400).send({ message: 'Usuário ou e-mail já cadastrado.' });
     }
 
-    const newUser = new User({ username, email, password });
+    const newUser = new User({ username, email, password, casesResolved: 0 });
     await newUser.save();
 
     console.log('✅ Usuário registrado no banco:', { username, email });
@@ -90,12 +91,44 @@ app.post('/api/login', async (req, res) => {
     console.log('✅ Login bem-sucedido.');
     return res.status(200).send({
       message: 'Login successful',
-      user: { id: user._id, username: user.username },
+      user: { id: user._id, username: user.username, casesResolved: user.casesResolved || 0 },
       token: 'mock-token'
     });
   } catch (error) {
     console.error('Erro no login:', error);
     return res.status(500).send({ message: 'Erro interno no servidor.' });
+  }
+});
+
+// Atualiza placar após caso ganho
+app.post('/api/win-case', async (req, res) => {
+  const { username } = req.body;
+  if (!username) return res.status(400).send({ message: 'Username is required' });
+
+  try {
+    const user = await User.findOneAndUpdate(
+      { username },
+      { $inc: { casesResolved: 1 } },
+      { new: true }
+    );
+    if (!user) return res.status(404).send({ message: 'User not found' });
+    
+    return res.status(200).send({ casesResolved: user.casesResolved });
+  } catch (error) {
+    console.error('Erro ao somar caso ganho:', error);
+    return res.status(500).send({ message: 'Erro ao atualizar dados do usuário.' });
+  }
+});
+
+// Puxa status do usuário atualizado
+app.get('/api/user/:username', async (req, res) => {
+  const { username } = req.params;
+  try {
+    const user = await User.findOne({ username });
+    if (!user) return res.status(404).send({ message: 'User not found' });
+    return res.status(200).send({ user: { username: user.username, casesResolved: user.casesResolved || 0 } });
+  } catch (err) {
+    return res.status(500).send({ message: 'Server error' });
   }
 });
 

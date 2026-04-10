@@ -19,6 +19,7 @@ const MapView: React.FC<MapViewProps> = ({ currentLocation, onCitySelect }) => {
   const [line, setLine] = useState<{ startX: number; startY: number; endX: number; endY: number } | null>(null);
   const [planePos, setPlanePos] = useState<{ x: number; y: number; angle: number } | null>(null);
   const [isFlying, setIsFlying] = useState(false);
+  const audioRef = React.useRef<HTMLAudioElement | null>(null);
 
   // Place plane at current city on load / city change
   useEffect(() => {
@@ -37,6 +38,10 @@ const MapView: React.FC<MapViewProps> = ({ currentLocation, onCitySelect }) => {
     if (!start || !end) return;
 
     setIsFlying(true);
+    if (audioRef.current) {
+      audioRef.current.currentTime = 0;
+      audioRef.current.play().catch(() => {});
+    }
 
     // Angle: atan2 of direction + 45° because emoji ✈ naturally points NE
     const angle = Math.atan2(end.top - start.top, end.left - start.left) + Math.PI / 4;
@@ -61,6 +66,7 @@ const MapView: React.FC<MapViewProps> = ({ currentLocation, onCitySelect }) => {
 
   return (
     <MapContainer>
+      <audio ref={audioRef} src="https://actions.google.com/sounds/v1/transportation/airplane_flyby.ogg" preload="auto" />
       <MapImage
         src="https://img.freepik.com/vetores-gratis/contorno-de-mapa-mundial-em-fundo-preto_1017-46153.jpg"
         alt="Mapa Mundi"

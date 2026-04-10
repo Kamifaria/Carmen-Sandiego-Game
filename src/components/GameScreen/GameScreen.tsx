@@ -66,8 +66,28 @@ const GameScreen: React.FC = () => {
   const [introComplete, setIntroComplete] = useState(false);
 
   // ── Game meta ──────────────────────────────────────────────────
-  const [rankAtual] = useState("Novato");
   const [casesResolved, setCasesResolved] = useState(0);
+  
+  const rankAtual = useMemo(() => {
+    if (casesResolved >= 30) return "Superintendente";
+    if (casesResolved >= 15) return "Inspetor";
+    if (casesResolved >= 5) return "Detetive";
+    return "Novato";
+  }, [casesResolved]);
+
+  // Load user data on mount
+  useEffect(() => {
+    if (user?.username) {
+      fetch('http://localhost:3001/api/user/' + user.username)
+        .then(res => res.json())
+        .then(data => {
+          if (data && data.user) {
+            setCasesResolved(data.user.casesResolved || 0);
+          }
+        })
+        .catch(console.error);
+    }
+  }, [user?.username]);
 
   // ── Game round state ───────────────────────────────────────────
   const [villain, setVillain] = useState<Trupe>(trupeiros[0]);
@@ -124,10 +144,11 @@ const GameScreen: React.FC = () => {
       `Um tesouro foi roubado em ${currentLocation.name}!`,
       `Artefato: "${startedArtefact}".`,
       `${genderLabel} na cena do crime.`,
+      `Resolução total até o momento: ${casesResolved} Casos.`,
       `Rastreie o criminoso e prenda-o antes de Domingo, 17:00h.`,
       "Boa sorte, Detetive.",
     ];
-  }, [suspectGender, user?.username, rankAtual, currentLocation.name, startedArtefact]);
+  }, [suspectGender, user?.username, rankAtual, currentLocation.name, startedArtefact, casesResolved]);
 
   const handleNextStep = useCallback(() => {
     if (!readyForNext || step >= messages.length) return;
@@ -185,6 +206,21 @@ const GameScreen: React.FC = () => {
             setBottomMessage(
               `🚨 ${villain.nome} preso(a)! Mandado válido confirmado. CASO ENCERRADO!`
             );
+            
+            // Gravar estatística de vitória
+            if (user?.username) {
+              fetch('http://localhost:3001/api/win-case', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username: user.username })
+              })
+              .then(res => res.json())
+              .then(data => {
+                if (data.casesResolved) setCasesResolved(data.casesResolved);
+              })
+              .catch(console.error);
+            }
+
           } else if (issuedWarrant) {
             setGameState("lost");
             setBottomMessage(
@@ -220,7 +256,7 @@ const GameScreen: React.FC = () => {
         );
       }
     },
-    [gameState, gamePath, currentLocation, currentPathIndex, issuedWarrant, villain, advanceTime]
+    [gameState, gamePath, currentLocation, currentPathIndex, issuedWarrant, villain, advanceTime, user]
   );
 
   // ── Travel ─────────────────────────────────────────────────────
@@ -255,7 +291,6 @@ const GameScreen: React.FC = () => {
 
   // ── Restart ────────────────────────────────────────────────────
   const handleRestart = () => {
-    setCasesResolved(prev => (gameState === "won" ? prev + 1 : prev));
     startNewRound();
   };
 
