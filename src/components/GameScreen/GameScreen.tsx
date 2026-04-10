@@ -15,6 +15,7 @@ import Button from "../Button/Button";
 import {
   StyledGameScreen,
   ScreenWrapper,
+  MainContentArea,
   LeftColumn,
   RightColumn,
   CityInfoBar,
@@ -327,10 +328,11 @@ const GameScreen: React.FC = () => {
       tabIndex={0}
     >
       <audio ref={audioRef} src="/typewriter-key.mp3" />
-      <HeaderComponent />
 
       <ScreenWrapper>
-        {/* LEFT: typewriter intro — hides smoothly once complete */}
+        <HeaderComponent />
+        <MainContentArea>
+          {/* LEFT: typewriter intro — hides smoothly once complete */}
         <LeftColumn $isHidden={introComplete}>
           <TypingArea>
             <MessageContainer>
@@ -433,7 +435,7 @@ const GameScreen: React.FC = () => {
               </button>
             </GameOverlay>
           )}
-        </RightColumn>
+        </MainContentArea>
       </ScreenWrapper>
     </StyledGameScreen>
   );

@@ -1,159 +1,140 @@
-// Header.styles.ts
 import styled from "styled-components";
 
+// -- Wrappers for the Typewriter effect
 export const TypistWrapper = styled.div`
-  font-size: 1.5rem;
+  font-size: 1.1rem;
 `;
 
+// -- Main Menu Bar (Looks like Windows 95 / MS-DOS)
 export const Header = styled.div`
-  width: 60.2%;
-  background-color: white;
+  width: 100%;
+  background-color: #d4cfc1;
   color: black;
   font-family: "Pixelify Sans", sans-serif;
-  font-size: 3rem;
   display: flex;
   justify-content: flex-start;
-  position: fixed;
-  top: 80px;
-  z-index: 9;
-  border-bottom: 4px solid black;
-  border-top: 4px solid grey;
-  border-left: 4px solid grey;
-  border-right: 4px solid grey;
+  align-items: center;
+  border-bottom: 2px solid #000;
+  padding: 2px 8px;
+  z-index: 10;
+  box-shadow: inset 0 2px 0 rgba(255, 255, 255, 0.8), inset 0 -2px 0 rgba(0, 0, 0, 0.2);
 `;
 
 export const HeaderItem = styled.div<{ isSelected?: boolean }>`
-  margin-right: 20px;
-  cursor: pointer;
   position: relative;
-  font-size: 2.5rem;
-  background-color: ${({ isSelected }) =>
-    isSelected ? "black" : "transparent"};
-  color: ${({ isSelected }) => (isSelected ? "white" : "black")};
-  padding: 10px;
-  border-radius: 4px;
+  font-size: 1.3rem;
+  padding: 4px 12px;
+  cursor: pointer;
+  background-color: ${({ isSelected }) => (isSelected ? "#000" : "transparent")};
+  color: ${({ isSelected }) => (isSelected ? "#fff" : "#000")};
+  letter-spacing: 1px;
+  user-select: none;
+
+  &:hover {
+    background-color: ${({ isSelected }) => (isSelected ? "#000" : "#a8a497")};
+    color: ${({ isSelected }) => (isSelected ? "#fff" : "#000")};
+  }
 `;
 
-export const Dropdown = styled.div<{ show: boolean; top: number; left: number }>`
+export const Dropdown = styled.div<{ show: boolean }>`
   position: absolute;
-  background-color: white;
-  border: 2px solid black;
-  border-radius: 4px;
-  width: auto;
-  max-height: auto;
-  display: ${({ show }) => (show ? "block" : "none")};
-  top: ${({ top }) => top}px;
-  left: ${({ left }) => left}px;
+  top: 100%;
+  left: 0;
+  background-color: #d4cfc1;
+  border: 2px solid #000;
+  box-shadow: 4px 4px 0 rgba(0,0,0,0.5);
+  min-width: 180px;
+  display: ${({ show }) => (show ? "flex" : "none")};
+  flex-direction: column;
+  z-index: 20;
+  padding: 4px 0;
 `;
 
 export const DropdownItem = styled.div`
-  font-size: 2rem;
+  font-size: 1.1rem;
+  padding: 6px 12px;
   cursor: pointer;
-
-  &:last-child {
-    border-bottom: none;
-  }
+  color: #000;
+  font-family: "Pixelify Sans", sans-serif;
 
   &:hover {
-    background-color: black;
-    color: white;
+    background-color: #000;
+    color: #fff;
   }
 `;
 
+// -- Dossier Modal Overlay (Center screen reading)
 export const ModalBackground = styled.div`
   font-family: "Pixelify Sans", sans-serif;
-  position: fixed;
-  width: 60%;
-  height: 100%;
+  position: absolute;
+  inset: 0; 
+  background: rgba(0, 0, 0, 0.6);
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 100;
+  z-index: 50;
 `;
 
 export const ModalContainer = styled.div`
   display: flex;
   flex-direction: column;
-  background: white;
-  width: 60%;
-  max-width: 800px;
-  height: 350px;
+  background: #f0e6cc;
+  width: 500px;
+  max-width: 90%;
+  max-height: 80%;
+  border: 3px solid #111;
+  box-shadow: 6px 6px 0 rgba(0, 0, 0, 0.8);
   overflow: hidden;
-  border: solid black;
-  box-shadow: 3px 3px 0px white, 5px 5px 0px black, 7px 7px 0px white,
-    9px 9px 0px black;
 `;
 
 export const ModalBody = styled.div`
   display: flex;
   flex-direction: row;
-  flex: 1;
+  padding: 15px;
+  border-bottom: 2px dashed #888;
 `;
 
 export const ImageContainer = styled.div`
-  flex: 0 0 200px;
+  flex: 0 0 120px;
   display: flex;
-  justify-content: flex-start;
+  justify-content: center;
   align-items: flex-start;
-  padding: 20px 10px 0px 10px;
-  overflow: hidden;
 `;
 
 export const Image = styled.img`
-  width: 100%;
-  max-width: 200px;
-  max-height: 100%;
-  box-shadow: 8px 5px;
+  width: 100px;
+  height: 100px;
+  object-fit: contain;
+  border: 2px solid #333;
+  box-shadow: 3px 3px 0 #888;
+  background: #ccc;
 `;
 
 export const ContentContainer = styled.div`
   flex: 1;
   display: flex;
   flex-direction: column;
-  justify-content: flex-start;
-  text-align: left;
-  padding: 15px 0 2px 10px;
-  overflow-y: auto;
+  padding-left: 15px;
+  color: #111;
 `;
 
 export const ModalContent = styled.div`
-  font-size: 1.5rem;
+  font-family: "Courier New", monospace;
+  font-size: 1.05rem;
 
-  p {
-    margin: 0;
-    padding: 0;
-    line-height: 1.5;
-  }
-
-  strong {
-    display: inline;
-  }
+  p { margin: 0 0 6px 0; font-weight: bold; }
+  strong { color: #555; margin-right: 4px; }
 `;
 
 export const ModalFooter = styled.div<{ isVisible: boolean }>`
-  background: white;
-  text-align: left;
-  font-size: 1.5rem;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
+  background: #e6dfca;
+  color: #111;
+  font-family: "Courier New", monospace;
+  font-size: 1.05rem;
   padding: 15px;
-  margin-top: auto;
   opacity: ${({ isVisible }) => (isVisible ? 1 : 0)};
-  transition: opacity 0.5s ease-out;
-  overflow: hidden;
+  transition: opacity 0.3s ease-out;
 
-  p {
-    margin: 0;
-    padding: 0;
-    line-height: 1.5;
-  }
-
-  p + p {
-    margin-top: 20px;
-  }
-
-  strong {
-    display: inline;
-  }
+  p { margin: 0 0 4px 0; font-weight: bold; }
+  strong { color: #555; margin-right: 4px; }
 `;

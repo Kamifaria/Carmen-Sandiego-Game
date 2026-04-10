@@ -1,5 +1,4 @@
-import React, { useState, useRef, useEffect } from "react";
-import Typist from "react-typist";
+import React, { useState, useEffect, useRef } from "react";
 import { Trupe, trupeiros } from "../../utils/trupeUtils";
 
 import {
@@ -18,59 +17,60 @@ import {
   ModalFooter,
 } from "./Header.styles";
 
-const HeaderComponent: React.FC = () => {
-  const [showDropdown, setShowDropdown] = useState(false);
-  const [dropdownPosition, setDropdownPosition] = useState({ top: 0, left: 0 });
-  const [isDossiersSelected, setIsDossiersSelected] = useState(false);
-  const [selectedTrupeiro, setSelectedTrupeiro] = useState<Trupe | null>(null);
-  const [isFooterTyping, setIsFooterTyping] = useState(false);
+// Custom simple typewriter hook to avoid react-typist bugs
+const useTypewriter = (text: string, speed = 25) => {
+  const [displayed, setDisplayed] = useState("");
+  const [done, setDone] = useState(false);
 
-  const dossiersRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    setDisplayed("");
+    setDone(false);
+    let i = 0;
+    const t = setInterval(() => {
+      setDisplayed(text.slice(0, i + 1));
+      i++;
+      if (i >= text.length) {
+        clearInterval(t);
+        setDone(true);
+      }
+    }, speed);
+    return () => clearInterval(t);
+  }, [text, speed]);
+
+  return { displayed, done };
+};
+
+export const HeaderComponent: React.FC = () => {
+  const [showDropdown, setShowDropdown] = useState(false);
+  const [selectedTrupeiro, setSelectedTrupeiro] = useState<Trupe | null>(null);
+
   const modalRef = useRef<HTMLDivElement>(null);
 
   const toggleDropdown = () => {
-    if (dossiersRef.current) {
-      const { top, left, height } = dossiersRef.current.getBoundingClientRect();
-      setDropdownPosition({
-        top: top + height,
-        left: left,
-      });
-      setShowDropdown(!showDropdown);
-      setIsDossiersSelected(!isDossiersSelected);
-    }
+    setShowDropdown((prev) => !prev);
   };
 
-  const handleDropdownItemClick = (suspeito: Trupe) => {
+  const handleDropdownItemClick = (e: React.MouseEvent, suspeito: Trupe) => {
+    e.stopPropagation();
     setSelectedTrupeiro(suspeito);
     setShowDropdown(false);
-    setIsFooterTyping(false);
   };
-
-  useEffect(() => {
-    if (showDropdown && dossiersRef.current) {
-      const { top, left, height } = dossiersRef.current.getBoundingClientRect();
-      setDropdownPosition({
-        top: top + height,
-        left: left,
-      });
-    }
-  }, [showDropdown]);
 
   const handleClickOutside = (e: MouseEvent) => {
+    // If we click outside the modal, close it
     if (modalRef.current && !modalRef.current.contains(e.target as Node)) {
       setSelectedTrupeiro(null);
-      setIsDossiersSelected(false);
     }
   };
 
   useEffect(() => {
-    document.addEventListener("mousedown", handleClickOutside);
+    if (selectedTrupeiro) {
+      document.addEventListener("mousedown", handleClickOutside);
+    } else {
+      document.removeEventListener("mousedown", handleClickOutside);
+    }
     return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
-
-  const handleTypingDone = () => {
-    setIsFooterTyping(true);
-  };
+  }, [selectedTrupeiro]);
 
   return (
     <>
@@ -78,27 +78,19 @@ const HeaderComponent: React.FC = () => {
         <HeaderItem>Jogo</HeaderItem>
         <HeaderItem>Opções</HeaderItem>
         <HeaderItem>Acme</HeaderItem>
-        <HeaderItem
-          ref={dossiersRef}
-          onClick={toggleDropdown}
-          isSelected={isDossiersSelected}
-        >
+        <HeaderItem onClick={toggleDropdown} isSelected={showDropdown}>
           Dossiês
+          <Dropdown show={showDropdown}>
+            {trupeiros.map((suspeito: Trupe) => (
+              <DropdownItem
+                key={suspeito.nome}
+                onClick={(e) => handleDropdownItemClick(e, suspeito)}
+              >
+                {suspeito.nome}
+              </DropdownItem>
+            ))}
+          </Dropdown>
         </HeaderItem>
-        <Dropdown
-          top={dropdownPosition.top}
-          left={dropdownPosition.left}
-          show={showDropdown}
-        >
-          {trupeiros.map((suspeito: Trupe) => (
-            <DropdownItem
-              key={suspeito.nome}
-              onClick={() => handleDropdownItemClick(suspeito)}
-            >
-              {suspeito.nome}
-            </DropdownItem>
-          ))}
-        </Dropdown>
       </Header>
 
       {selectedTrupeiro && (
@@ -106,40 +98,50 @@ const HeaderComponent: React.FC = () => {
           <ModalContainer ref={modalRef}>
             <ModalBody>
               <ImageContainer>
-                <Image
-                  src={selectedTrupeiro.imagem}
-                  alt={selectedTrupeiro.nome}
-                />
+                <Image src={selectedTrupeiro.imagem} alt={selectedTrupeiro.nome} />
               </ImageContainer>
               <ContentContainer>
                 <ModalContent>
-                  <TypistWrapper>
-                    <Typist cursor={{ show: false }} onTypingDone={handleTypingDone}>
-                      <p><strong>Nome:</strong> {selectedTrupeiro.nome}</p>
-                      <p><strong>Sexo:</strong> {selectedTrupeiro.sexo}</p>
-                      <p><strong>Idade:</strong> {selectedTrupeiro.idade || "Não disponível"}</p>
-                      <p><strong>Hobby:</strong> {selectedTrupeiro.hobby}</p>
-                      <p><strong>Cabelo:</strong> {selectedTrupeiro.cabelo}</p>
-                      <p><strong>Veículo:</strong> {selectedTrupeiro.veiculo}</p>
-                    </Typist>
-                  </TypistWrapper>
+                  <DossierDetails suspeito={selectedTrupeiro} />
                 </ModalContent>
               </ContentContainer>
             </ModalBody>
-            <ModalFooter isVisible={isFooterTyping}>
-              <TypistWrapper>
-                {isFooterTyping && (
-                  <Typist cursor={{ show: false }}>
-                    <p><strong>Característica:</strong> {selectedTrupeiro.caracteristica}</p>
-                    <p><strong>Outro:</strong> {selectedTrupeiro.outro || "Não disponível"}</p>
-                  </Typist>
-                )}
-              </TypistWrapper>
-            </ModalFooter>
           </ModalContainer>
         </ModalBackground>
       )}
     </>
+  );
+};
+
+// Extracted to manage its own typewriter state cleanly
+const DossierDetails: React.FC<{ suspeito: Trupe }> = ({ suspeito }) => {
+  const detailsText = `Name: ${suspeito.nome}
+Sex: ${suspeito.sexo}
+Age: ${suspeito.idade || "Desconhecida"}
+Hobby: ${suspeito.hobby}  
+Hair: ${suspeito.cabelo}
+Vehicle: ${suspeito.veiculo}`;
+
+  const { displayed: topDisplayed, done: topDone } = useTypewriter(detailsText, 20);
+
+  const footerText = `Feature: ${suspeito.caracteristica}
+Other: ${suspeito.outro || "N/A"}`;
+  const { displayed: bottomDisplayed } = useTypewriter(topDone ? footerText : "", 20);
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+      <TypistWrapper style={{ whiteSpace: "pre-wrap" }}>
+        {topDisplayed}
+        {!topDone && <span style={{ animation: "flicker 1s infinite" }}>_</span>}
+      </TypistWrapper>
+
+      <ModalFooter isVisible={topDone} style={{ marginTop: 'auto' }}>
+        <TypistWrapper style={{ whiteSpace: "pre-wrap" }}>
+          {bottomDisplayed}
+          {topDone && <span style={{ animation: "flicker 1s infinite" }}>_</span>}
+        </TypistWrapper>
+      </ModalFooter>
+    </div>
   );
 };
 

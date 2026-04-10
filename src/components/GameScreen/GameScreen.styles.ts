@@ -50,10 +50,10 @@ export const StyledGameScreen = styled.div`
 // ─────────────────────────────────────────────
 export const ScreenWrapper = styled.div`
   display: flex;
-  align-items: stretch;
+  flex-direction: column;
   width: 95vw;
   max-width: 1300px;
-  height: 80vh;
+  height: 85vh;
   background-color: #000;
   border: 3px solid #2a5f6b;
   box-shadow:
@@ -62,6 +62,15 @@ export const ScreenWrapper = styled.div`
     inset 0 0 40px rgba(0, 0, 0, 0.8);
   overflow: hidden;
   border-radius: 4px;
+`;
+
+export const MainContentArea = styled.div`
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+  flex: 1;
+  width: 100%;
+  overflow: hidden;
 `;
 
 // ─────────────────────────────────────────────
