@@ -33,7 +33,7 @@ const Login = () => {
         localStorage.setItem('userId', userData.id);
         localStorage.setItem('username', userData.username);
         setUser({ username: userData.username });
-        navigate('/game');
+        navigate('/lobby');
       } else {
         setError('Usuário ou senha incorretos.');
       }

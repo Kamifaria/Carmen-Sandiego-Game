@@ -9,18 +9,24 @@ import Options from './components/Options/Options';
 import GameScreen from './components/GameScreen/GameScreen';
 import { AuthProvider } from './services/AuthContext';
 
+import Lobby from './components/Lobby/Lobby';
+import CRTFilter from './components/CRTFilter/CRTFilter';
+
 const App = () => {
   return (
     <AuthProvider>
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/home" element={<Home />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
-        <Route path="/load-game" element={<LoadGame />} />
-        <Route path="/options" element={<Options />} />
-        <Route path="/game" element={<GameScreen />} />
-      </Routes>
+      <CRTFilter>
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/home" element={<Home />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/load-game" element={<LoadGame />} />
+          <Route path="/options" element={<Options />} />
+          <Route path="/lobby" element={<Lobby />} />
+          <Route path="/game" element={<GameScreen />} />
+        </Routes>
+      </CRTFilter>
     </AuthProvider>
   );
 };

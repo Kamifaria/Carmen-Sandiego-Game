@@ -7,10 +7,13 @@ import { pickRandomArtefact } from "../../utils/artefactsUtils";
 import { trupeiros, Trupe } from "../../utils/trupeUtils";
 
 import SearchOptions from "../SearchOptions/SearchOptions";
-import MapView from "../MapView/MapView";
 import CluesComputer from "../CluesComputer/CluesComputer";
 import HeaderComponent from "../Header/Header";
 import Button from "../Button/Button";
+import TravelTerminal from "../TravelTerminal/TravelTerminal";
+import { getDifficultySettings } from "../../utils/gameLogicUtils";
+import { generateClue, Clue } from "../../services/clueService";
+import FlightTransition from "../FlightTransition/FlightTransition";
 
 import {
   StyledGameScreen,
@@ -29,6 +32,12 @@ import {
   TypewriterContainer,
   ButtonContainerWrapper,
   GameOverlay,
+  CityBackground,
+  WeatherOverlay,
+  WitnessWrapper,
+  WitnessPortrait,
+  WitnessText,
+  CloseWitnessButton,
 } from "./GameScreen.styles";
 
 // ─── Custom Typewriter ──────────────────────────────────────────────
@@ -93,12 +102,8 @@ const GameScreen: React.FC = () => {
   // ── Game meta ──────────────────────────────────────────────────
   const [casesResolved, setCasesResolved] = useState(0);
   
-  const rankAtual = useMemo(() => {
-    if (casesResolved >= 30) return "Superintendente";
-    if (casesResolved >= 15) return "Inspetor";
-    if (casesResolved >= 5) return "Detetive";
-    return "Novato";
-  }, [casesResolved]);
+  const difficulty = useMemo(() => getDifficultySettings(casesResolved), [casesResolved]);
+  const rankAtual = difficulty.rankName;
 
   // Load user data on mount
   useEffect(() => {
@@ -125,23 +130,45 @@ const GameScreen: React.FC = () => {
   const [issuedWarrant, setIssuedWarrant] = useState<string | null>(null);
   const [gameState, setGameState] = useState<"playing" | "won" | "lost">("playing");
   const [bottomMessage, setBottomMessage] = useState("");
+  const [currentClue, setCurrentClue] = useState<Clue | null>(null);
+  const [isFlightVisible, setIsFlightVisible] = useState(false);
+  const [currentWeather, setCurrentWeather] = useState<'clear' | 'rain' | 'snow'>('clear');
+  const [availableDestinations, setAvailableDestinations] = useState<LocationData[]>([]);
 
   // ── UI toggle state ────────────────────────────────────────────
   const [showMapView, setShowMapView] = useState(false);
   const [showSearchOptions, setShowSearchOptions] = useState(false);
   const [showCluesComputer, setShowCluesComputer] = useState(false);
   const [isSuspectListUpdated, setIsSuspectListUpdated] = useState(false);
+  const [isArriving, setIsArriving] = useState(false);
+
+  // sound trigger for city change
+  useEffect(() => {
+    if (introComplete) {
+      setIsArriving(true);
+      const t = setTimeout(() => setIsArriving(false), 1000);
+      return () => clearTimeout(t);
+    }
+  }, [currentLocation, introComplete]);
 
   // ── Build new round ────────────────────────────────────────────
   const startNewRound = useCallback(() => {
     const v = trupeiros[Math.floor(Math.random() * trupeiros.length)];
-    const path = buildPath(4);
+    const path = buildPath(difficulty.pathLength);
     setVillain(v);
     setSuspectGender(v.sexo);
     setGamePath(path);
     setCurrentPathIndex(0);
     setCurrentLocation(path[0]);
     setStartedArtefact(pickRandomArtefact());
+    // setup connections for start city
+    const correct = path[1];
+    const others = locationsData
+      .filter(l => l.name !== path[0].name && l.name !== correct?.name)
+      .sort(() => 0.5 - Math.random())
+      .slice(0, 2);
+    setAvailableDestinations([correct, ...others].sort(() => 0.5 - Math.random()));
+    
     setElapsedHours(0);
     setIssuedWarrant(null);
     setGameState("playing");
@@ -259,22 +286,12 @@ const GameScreen: React.FC = () => {
           }
         } else {
           const next = gamePath[currentPathIndex + 1];
-          const pickCity = Math.random() > 0.5;
-          let clue: string;
-          if (pickCity) {
-            clue = `🕵️ Dica em ${placeName}: "Fugiram para um lugar assim: ${next.description.substring(0, 55)}..."`;
-          } else {
-            const attrs = [
-              `cabelo ${villain.cabelo}`,
-              `adora ${villain.hobby}`,
-              `tem ${villain.caracteristica}`,
-              `foi visto em um(a) ${villain.veiculo}`,
-            ];
-            clue = `🕵️ Dica em ${placeName}: testemunha diz que suspeito tem ${attrs[Math.floor(Math.random() * attrs.length)]}.`;
-          }
-          advanceTime(2, clue);
+          const clue = generateClue(villain, next, placeName);
+          setCurrentClue(clue);
+          advanceTime(2, clue.text);
         }
       } else {
+        setCurrentClue(null);
         advanceTime(
           2,
           `❌ Nada em ${placeName}. Você parece estar na cidade errada. Tente outra rota!`
@@ -294,14 +311,34 @@ const GameScreen: React.FC = () => {
       setCurrentLocation(city);
       setShowMapView(false);
       setShowSearchOptions(false);
+      setIsFlightVisible(true);
+
+      // Generate new connections for the next city
+      const nextIndex = currentPathIndex + 2; // +1 for travel, +1 for next
+      const correct = gamePath[nextIndex];
+      const others = locationsData
+        .filter(l => l.name !== city.name && l.name !== correct?.name)
+        .sort(() => 0.5 - Math.random())
+        .slice(0, 3); // 3 options total if end, 3 total if middle
+      
+      const connections = correct ? [correct, ...others.slice(0, 2)] : others.slice(0, 3);
+      setAvailableDestinations(connections.sort(() => 0.5 - Math.random()));
+
+      // Randomize weather for new city
+      const weatherTypes: ('clear' | 'rain' | 'snow')[] = ['clear', 'rain', 'snow', 'clear', 'clear'];
+      setCurrentWeather(weatherTypes[Math.floor(Math.random() * weatherTypes.length)]);
 
       const nextInPath = gamePath[currentPathIndex + 1];
-      if (nextInPath && city.name === nextInPath.name) {
-        setCurrentPathIndex(prev => prev + 1);
-        advanceTime(4, `✈️ Chegou em ${cityName}. Há pistas do criminoso por aqui!`);
-      } else {
-        advanceTime(4, `✈️ Chegou em ${cityName}. Tudo quieto aqui — cidade errada!`);
-      }
+      
+      setTimeout(() => {
+        setIsFlightVisible(false);
+        if (nextInPath && city.name === nextInPath.name) {
+          setCurrentPathIndex(prev => prev + 1);
+          advanceTime(4, `✈️ Chegou em ${cityName}. Há pistas do criminoso por aqui!`);
+        } else {
+          advanceTime(4, `✈️ Chegou em ${cityName}. Tudo quieto aqui — cidade errada!`);
+        }
+      }, 3000); // 3 seconds flight
     },
     [gameState, gamePath, currentPathIndex, advanceTime]
   );
@@ -331,6 +368,7 @@ const GameScreen: React.FC = () => {
 
       <ScreenWrapper>
         <HeaderComponent />
+        <FlightTransition isVisible={isFlightVisible} destinationName={currentLocation.name} />
         <MainContentArea>
           {/* LEFT: typewriter intro — hides smoothly once complete */}
         <LeftColumn $isHidden={introComplete}>
@@ -367,15 +405,17 @@ const GameScreen: React.FC = () => {
             {currentLocation.description}
           </RightColumnDescription>
 
+          <CityBackground $img={currentLocation.image} />
+          <WeatherOverlay $type={currentWeather} />
+
           {/* Map / Search / Clues panel */}
           <OptionsContainer isVisible={introComplete && anyPanelOpen}>
             {showSearchOptions && (
               <SearchOptions currentCountry={currentLocation.name} onSearch={handleSearch} />
             )}
             {showMapView && (
-              <MapView
-                currentLocation={currentLocation}
-                selectedCity={null}
+              <TravelTerminal
+                availableDestinations={availableDestinations}
                 onCitySelect={handleCitySelect}
               />
             )}
@@ -394,6 +434,24 @@ const GameScreen: React.FC = () => {
               />
             )}
           </OptionsContainer>
+
+          {/* NPC Witness Panel */}
+          <WitnessWrapper isVisible={!!currentClue && showSearchOptions}>
+            <WitnessPortrait $img={`/assets/npcs/${currentClue?.npcType || 'merchant'}.png`} />
+            <WitnessText>
+              <span>{
+                currentClue?.npcType === 'librarian' ? 'Bibliotecária' : 
+                currentClue?.npcType === 'banker' ? 'Gerente do Banco' :
+                currentClue?.npcType === 'pilot' ? 'Capitão do Porto' : 'Testemunha Local'
+              }</span>
+              <TypewriterText 
+                key={currentClue?.text}
+                text={currentClue?.text || ""} 
+                onDone={() => {}} 
+              />
+            </WitnessText>
+            <CloseWitnessButton onClick={() => setCurrentClue(null)}>FECHAR (X)</CloseWitnessButton>
+          </WitnessWrapper>
 
           {/* Bottom bar: message + buttons */}
           <BottomSection>
@@ -433,7 +491,21 @@ const GameScreen: React.FC = () => {
               <button onClick={e => { e.stopPropagation(); handleRestart(); }}>
                 {gameState === "won" ? "→ PRÓXIMO CASO" : "→ TENTAR NOVAMENTE"}
               </button>
+              <button 
+                onClick={e => { e.stopPropagation(); navigate("/lobby"); }}
+                style={{ marginTop: "10px", borderColor: "#64ffda", color: "#64ffda" }}
+              >
+                🏠 VOLTAR AO QG
+              </button>
             </GameOverlay>
+          )}
+
+          {isArriving && (
+            <div style={{
+              position: 'absolute', inset: 0, backgroundColor: 'white', 
+              opacity: 0.1, zIndex: 999, pointerEvents: 'none',
+              animation: 'flash 0.5s ease-out'
+            }} />
           )}
         </RightColumn>
         </MainContentArea>

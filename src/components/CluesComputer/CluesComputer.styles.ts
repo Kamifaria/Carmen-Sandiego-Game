@@ -173,7 +173,6 @@ export const SuspectCard = styled.div<{ $isWarrant: boolean }>`
     object-fit: cover;
     border: 2px solid ${({ $isWarrant }) => ($isWarrant ? "#ff4444" : "#00ffcc")};
     background: rgba(0, 0, 0, 0.8);
-    filter: hue-rotate(180deg) saturate(1.2);
   }
 
   .name {
@@ -215,5 +214,66 @@ export const SuspectCard = styled.div<{ $isWarrant: boolean }>`
     .photo { width: 90px; height: 90px; }
     .name { font-size: 0.75rem; }
     .stamp { font-size: 0.8rem; top: 25px; }
+  }
+`;
+
+export const DossierTabs = styled.div`
+  display: flex;
+  gap: 10px;
+  padding: 0 20px;
+  flex-shrink: 0;
+`;
+
+export const TabButton = styled.button<{ $active: boolean }>`
+  background: ${props => props.$active ? 'rgba(0, 255, 204, 0.2)' : 'transparent'};
+  border: 1px solid #00ffcc;
+  color: #00ffcc;
+  padding: 8px 16px;
+  font-family: "Courier New", monospace;
+  font-weight: bold;
+  cursor: pointer;
+  text-transform: uppercase;
+  transition: all 0.2s;
+  border-radius: 4px 4px 0 0;
+
+  &:hover {
+    background: rgba(0, 255, 204, 0.1);
+  }
+`;
+
+export const DossierEntry = styled.div`
+  width: 100%;
+  display: flex;
+  gap: 20px;
+  background: rgba(0, 255, 204, 0.05);
+  border: 1px solid rgba(0, 255, 204, 0.3);
+  padding: 15px;
+  margin-bottom: 15px;
+  border-radius: 4px;
+
+  .dossier-photo {
+    width: 120px;
+    height: 120px;
+    object-fit: cover;
+    border: 1px solid #00ffcc;
+  }
+
+  .dossier-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    color: #cce0ee;
+    font-size: 0.9rem;
+
+    .d-name { color: #00ffcc; font-size: 1.2rem; font-weight: bold; margin-bottom: 5px; }
+    .d-row { span { font-weight: bold; color: #fff; } }
+    .d-bio { color: #aaa; font-style: italic; margin-top: 5px; border-top: 1px solid #333; padding-top: 5px;}
+  }
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
   }
 `;

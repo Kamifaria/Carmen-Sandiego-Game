@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { Trupe, trupeiros } from "../../utils/trupeUtils";
 
 import {
@@ -42,6 +43,7 @@ const useTypewriter = (text: string, speed = 25) => {
 };
 
 export const HeaderComponent: React.FC = () => {
+  const navigate = useNavigate();
   const [showDatabase, setShowDatabase] = useState(false);
   const [selectedTrupeiro, setSelectedTrupeiro] = useState<Trupe | null>(null);
 
@@ -57,7 +59,7 @@ export const HeaderComponent: React.FC = () => {
     <>
       <Header>
         <HeaderItem>Jogo</HeaderItem>
-        <HeaderItem>Opções</HeaderItem>
+        <HeaderItem onClick={() => navigate("/lobby")}>Perfil</HeaderItem>
         <HeaderItem>Acme</HeaderItem>
         <HeaderItem onClick={toggleDatabase} isSelected={showDatabase}>
           Dossiês

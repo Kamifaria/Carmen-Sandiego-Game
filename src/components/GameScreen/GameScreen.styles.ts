@@ -13,13 +13,39 @@ const flicker = keyframes`
   100% { opacity: 0.97; }
 `;
 
+const rainAnim = keyframes`
+  0% { background-position: 0px 0px; }
+  100% { background-position: 400px 1000px; }
+`;
+
+const snowAnim = keyframes`
+  0% { background-position: 0px 0px; }
+  100% { background-position: 100px 500px; }
+`;
+
+export const WeatherOverlay = styled.div<{ $type: 'clear' | 'rain' | 'snow' }>`
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+  display: ${({ $type }) => ($type === 'clear' ? 'none' : 'block')};
+  
+  background-image: ${({ $type }) => 
+    $type === 'rain' ? "url('https://www.transparenttextures.com/patterns/stardust.png')" :
+    $type === 'snow' ? "url('https://www.transparenttextures.com/patterns/snow.png')" : 'none'
+  };
+  
+  opacity: 0.4;
+  animation: ${({ $type }) => ($type === 'rain' ? rainAnim : snowAnim)} 1.5s linear infinite;
+`;
+
 // ─────────────────────────────────────────────
 // ROOT SCREEN — full viewport, cinematic bg
 // ─────────────────────────────────────────────
 export const StyledGameScreen = styled.div`
   position: relative;
   width: 100%;
-  height: 100vh;
+  height: 100dvh;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -94,9 +120,10 @@ export const LeftColumn = styled.div<{ $isHidden?: boolean }>`
   overflow: hidden;
 
   @media (max-width: 768px) {
-    flex: ${({ $isHidden }) => ($isHidden ? "0 0 0px" : "0 0 180px")};
+    flex: ${({ $isHidden }) => ($isHidden ? "0 0 0px" : "1")};
     width: 100%;
-    height: ${({ $isHidden }) => ($isHidden ? "0px" : "180px")};
+    min-height: ${({ $isHidden }) => ($isHidden ? "0px" : "180px")};
+    max-height: 250px;
     border-right: none;
     border-bottom: ${({ $isHidden }) => ($isHidden ? "0px" : "2px solid #2a5f6b")};
   }
@@ -135,10 +162,12 @@ export const CityInfoBar = styled.div<{ isVisible: boolean }>`
   box-sizing: border-box;
   background: #0b1f2a;
   border-bottom: 1px solid #1a4a5a;
-  font-family: "Courier New", monospace;
+  font-family: "Space Mono", monospace;
   font-size: 0.9rem;
+  font-weight: bold;
   letter-spacing: 1px;
   color: #ff4444;
+  text-shadow: 0 0 5px rgba(255, 68, 68, 0.5);
   z-index: 2;
   flex-shrink: 0;
 `;
@@ -161,6 +190,21 @@ export const RightColumnDescription = styled.div<{ isVisible: boolean }>`
   z-index: 1;
 `;
 
+export const CityBackground = styled.div<{ $img: string }>`
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: url(${props => props.$img});
+  background-size: cover;
+  background-position: center;
+  opacity: 0.25;
+  z-index: 0;
+  filter: sepia(0.2) contrast(1.1);
+  transition: background-image 1s ease-in-out;
+`;
+
 // ─────────────────────────────────────────────
 // OPTIONS OVERLAY (Map / Search / Dossier)
 // ─────────────────────────────────────────────
@@ -174,9 +218,11 @@ export const OptionsContainer = styled.div<{ isVisible: boolean }>`
   display: ${({ isVisible }) => (isVisible ? "flex" : "none")};
   flex-direction: column;
   align-items: stretch;
-  background-color: #050e14;
+  background-color: rgba(5, 14, 20, 0.9);
+  backdrop-filter: blur(10px);
   z-index: 10;
   overflow: hidden;
+  border-bottom: 2px solid #1a4a5a;
 
   @media (max-width: 768px) {
     height: calc(100% - 110px);
@@ -355,4 +401,119 @@ export const SubHeader = styled.div`
   display: flex;
   justify-content: center;
   border-bottom: double grey;
+`;
+// ─────────────────────────────────────────────
+// WITNESS / NPC INTERACTION
+// ─────────────────────────────────────────────
+export const WitnessWrapper = styled.div<{ isVisible: boolean }>`
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 90%;
+  max-width: 600px;
+  background: rgba(10, 30, 40, 0.95);
+  border: 2px solid #2a5f6b;
+  display: ${({ isVisible }) => (isVisible ? "flex" : "none")};
+  flex-direction: row;
+  align-items: center;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 0 30px rgba(0,0,0,0.8);
+  z-index: 100;
+  backdrop-filter: blur(10px);
+  animation: slideUp 0.4s ease-out;
+
+  @media (max-width: 600px) {
+    flex-direction: column;
+    width: 95%;
+  }
+
+  @keyframes slideUp {
+    from { transform: translate(-50%, 0%); opacity: 0; }
+    to { transform: translate(-50%, -50%); opacity: 1; }
+  }
+
+  @media (max-width: 768px) {
+    width: 95%;
+    padding: 15px;
+    top: auto;
+    bottom: 20px;
+    transform: translate(-50%, 0%);
+    
+    @keyframes slideUpMobile {
+      from { transform: translate(-50%, 100%); opacity: 0; }
+      to { transform: translate(-50%, 0%); opacity: 1; }
+    }
+    animation: slideUpMobile 0.4s ease-out;
+  }
+`;
+
+export const WitnessPortrait = styled.div<{ $img: string }>`
+  width: 150px;
+  height: 150px;
+  flex-shrink: 0;
+  background-image: url(${props => props.$img});
+  background-size: cover;
+  background-position: center;
+  border: 4px solid #1a4a5a;
+  border-radius: 4px;
+  margin-right: 20px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.5);
+
+  @media (max-width: 600px) {
+    margin-right: 0;
+    margin-bottom: 15px;
+  }
+
+  &::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(
+      0deg,
+      rgba(0, 0, 0, 0.1),
+      rgba(0, 0, 0, 0.1) 1px,
+      transparent 1px,
+      transparent 2px
+    );
+    pointer-events: none;
+  }
+`;
+
+export const WitnessText = styled.div`
+  flex: 1;
+  font-family: "Space Mono", monospace;
+  font-size: 1.1rem;
+  color: #fff;
+  line-height: 1.4;
+
+  span {
+    display: block;
+    margin-bottom: 10px;
+    font-weight: bold;
+    color: #ffd700;
+    text-transform: uppercase;
+    font-size: 0.8rem;
+    letter-spacing: 2px;
+  }
+`;
+
+export const CloseWitnessButton = styled.button`
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: transparent;
+  border: 1px solid #2a5f6b;
+  color: #2a5f6b;
+  padding: 4px 10px;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 0.8rem;
+  transition: all 0.2s;
+
+  &:hover {
+    background: #2a5f6b;
+    color: #fff;
+  }
 `;

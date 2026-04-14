@@ -7,7 +7,10 @@ import {
   ClueButton,
   FilterButton,
   SuspectsGallery,
-  SuspectCard
+  SuspectCard,
+  DossierTabs,
+  TabButton,
+  DossierEntry
 } from "./CluesComputer.styles";
 import { trupeiros, Trupe } from "../../utils/trupeUtils";
 
@@ -78,7 +81,8 @@ const CluesComputer: React.FC<CluesComputerProps> = ({
       if (saved) {
         try {
           const parsed = JSON.parse(saved) as Trupe[];
-          return parsed.length > 0 ? parsed : trupeiros;
+          const currentNames = parsed.map(p => p.nome);
+          return trupeiros.filter(t => currentNames.includes(t.nome));
         } catch {
           return trupeiros;
         }
@@ -86,6 +90,8 @@ const CluesComputer: React.FC<CluesComputerProps> = ({
     }
     return trupeiros;
   });
+
+  const [activeTab, setActiveTab] = useState<'clues' | 'dossiers'>('clues');
 
   useEffect(() => {
     localStorage.setItem("selectedClues", JSON.stringify(selectedClues));
@@ -124,34 +130,65 @@ const CluesComputer: React.FC<CluesComputerProps> = ({
 
   return (
     <StyledCluesComputer>
-      <CluesContainer>
-        <ScreenHeader>Pistas</ScreenHeader>
-        {Object.keys(clues).map((clueType) => (
-          <ClueButton
-            key={clueType}
-            onClick={() => handleClueClick(clueType as ClueType)}
-          >
-            <span className="clue-type">{clueType}:</span>
-            <span className="clue-option">
-              {selectedClues[clueType as ClueType] || ""}
-            </span>
-          </ClueButton>
-        ))}
-        <FilterButton onClick={handleFilter}>PESQUISAR</FilterButton>
+      <ScreenHeader>INTERPOL COMPUTER</ScreenHeader>
+      
+      <DossierTabs>
+        <TabButton $active={activeTab === 'clues'} onClick={() => setActiveTab('clues')}>
+          Filtros
+        </TabButton>
+        <TabButton $active={activeTab === 'dossiers'} onClick={() => setActiveTab('dossiers')}>
+          Dossiês
+        </TabButton>
+      </DossierTabs>
 
-        <SuspectsGallery>
-          {filteredViloes.length > 0 ? (
-            filteredViloes.map((vilao) => (
-              <SuspectCard key={vilao.nome} $isWarrant={filteredViloes.length === 1}>
-                <img className="photo" src={vilao.imagem} alt={vilao.nome} />
-                <div className="name">{vilao.nome}</div>
-                <div className="stamp">WARRANT</div>
-              </SuspectCard>
-            ))
-          ) : (
-            <p style={{ color: "red", textAlign: "center" }}>NENHUM SUSPEITO ENCONTRADO.</p>
-          )}
-        </SuspectsGallery>
+      <CluesContainer>
+        {activeTab === 'clues' ? (
+          <>
+            {Object.keys(clues).map((clueType) => (
+              <ClueButton
+                key={clueType}
+                onClick={() => handleClueClick(clueType as ClueType)}
+              >
+                <span className="clue-type">{clueType}:</span>
+                <span className="clue-option">
+                  {selectedClues[clueType as ClueType] || ""}
+                </span>
+              </ClueButton>
+            ))}
+            <FilterButton onClick={handleFilter}>PESQUISAR</FilterButton>
+
+            <SuspectsGallery>
+              {filteredViloes.length > 0 ? (
+                filteredViloes.map((vilao) => (
+                  <SuspectCard key={vilao.nome} $isWarrant={filteredViloes.length === 1}>
+                    <img className="photo" src={vilao.imagem} alt={vilao.nome} />
+                    <div className="name">{vilao.nome}</div>
+                    <div className="stamp">WARRANT</div>
+                  </SuspectCard>
+                ))
+              ) : (
+                <p style={{ color: "red", textAlign: "center" }}>NENHUM SUSPEITO ENCONTRADO.</p>
+              )}
+            </SuspectsGallery>
+          </>
+        ) : (
+          <div style={{ paddingBottom: '20px' }}>
+            {trupeiros.map((vilao) => (
+              <DossierEntry key={vilao.nome}>
+                <img className="dossier-photo" src={vilao.imagem} alt={vilao.nome} />
+                <div className="dossier-info">
+                  <div className="d-name">{vilao.nome}</div>
+                  <div className="d-row"><span>Sexo:</span> {vilao.sexo}</div>
+                  <div className="d-row"><span>Hobby:</span> {vilao.hobby}</div>
+                  <div className="d-row"><span>Cabelo:</span> {vilao.cabelo}</div>
+                  <div className="d-row"><span>Traço:</span> {vilao.caracteristica}</div>
+                  <div className="d-row"><span>Veículo:</span> {vilao.veiculo}</div>
+                  <div className="d-bio">Bio: {vilao.outro}</div>
+                </div>
+              </DossierEntry>
+            ))}
+          </div>
+        )}
       </CluesContainer>
     </StyledCluesComputer>
   );
