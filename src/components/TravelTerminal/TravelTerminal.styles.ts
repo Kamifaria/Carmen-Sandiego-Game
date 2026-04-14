@@ -48,9 +48,11 @@ export const ContentRow = styled.div`
   display: flex;
   gap: 30px;
   flex: 1;
+  overflow-y: auto;
 
   @media (max-width: 900px) {
-    flex-direction: column-reverse;
+    flex-direction: column;
+    gap: 15px;
   }
 `;
 
@@ -58,13 +60,14 @@ export const DepartureBoard = styled.div`
   flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 15px;
+  gap: 10px;
+  min-height: min-content;
 `;
 
 export const FlightRow = styled.div<{ $isSelected: boolean }>`
   background: ${({ $isSelected }) => ($isSelected ? "rgba(100, 255, 218, 0.15)" : "rgba(11, 31, 42, 0.6)")};
   border: 1px solid ${({ $isSelected }) => ($isSelected ? "#64ffda" : "#1a4a5a")};
-  padding: 20px;
+  padding: 12px 15px;
   border-radius: 4px;
   display: flex;
   justify-content: space-between;
@@ -75,18 +78,17 @@ export const FlightRow = styled.div<{ $isSelected: boolean }>`
   &:hover {
     background: rgba(100, 255, 218, 0.1);
     border-color: #64ffda;
-    transform: translateX(5px);
   }
 
   .city-name {
-    font-size: 1.2rem;
+    font-size: 1rem;
     font-weight: bold;
-    letter-spacing: 2px;
+    letter-spacing: 1px;
   }
 
   .status {
-    font-size: 0.8rem;
-    padding: 4px 8px;
+    font-size: 0.7rem;
+    padding: 3px 6px;
     background: ${({ $isSelected }) => ($isSelected ? "#64ffda" : "#1a4a5a")};
     color: ${({ $isSelected }) => ($isSelected ? "#050e14" : "#64ffda")};
     border-radius: 2px;
@@ -94,8 +96,8 @@ export const FlightRow = styled.div<{ $isSelected: boolean }>`
 `;
 
 export const RadarPanel = styled.div`
-  width: 300px;
-  height: 300px;
+  width: 250px;
+  height: 250px;
   background: #0b1f2a;
   border: 2px solid #1a4a5a;
   border-radius: 50%;
@@ -104,11 +106,13 @@ export const RadarPanel = styled.div`
   justify-content: center;
   align-items: center;
   box-shadow: inset 0 0 30px rgba(0,0,0,0.5);
+  flex-shrink: 0;
 
   @media (max-width: 900px) {
     align-self: center;
-    width: 200px;
-    height: 200px;
+    width: 160px;
+    height: 160px;
+    margin-top: 10px;
   }
 
   /* Radar sweep effect */

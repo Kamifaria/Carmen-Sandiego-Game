@@ -7,7 +7,7 @@ const fadeIn = keyframes`
 
 export const StyledLobby = styled.div`
   width: 100%;
-  height: 100vh;
+  height: 100dvh;
   display: flex;
   flex-direction: column;
   align-items: center;
