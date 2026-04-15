@@ -42,7 +42,12 @@ const useTypewriter = (text: string, speed = 25) => {
   return { displayed, done };
 };
 
-export const HeaderComponent: React.FC = () => {
+interface HeaderProps {
+  isMuted?: boolean;
+  onToggleSound?: () => void;
+}
+
+export const HeaderComponent: React.FC<HeaderProps> = ({ isMuted, onToggleSound }) => {
   const navigate = useNavigate();
   const [showDatabase, setShowDatabase] = useState(false);
   const [selectedTrupeiro, setSelectedTrupeiro] = useState<Trupe | null>(null);
@@ -60,7 +65,9 @@ export const HeaderComponent: React.FC = () => {
       <Header>
         <HeaderItem>Jogo</HeaderItem>
         <HeaderItem onClick={() => navigate("/lobby")}>Perfil</HeaderItem>
-        <HeaderItem>Acme</HeaderItem>
+        <HeaderItem onClick={onToggleSound}>
+          {isMuted ? "🔇 Som Off" : "🔊 Som On"}
+        </HeaderItem>
         <HeaderItem onClick={toggleDatabase} isSelected={showDatabase}>
           Dossiês
         </HeaderItem>

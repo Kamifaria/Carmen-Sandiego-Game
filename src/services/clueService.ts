@@ -3,7 +3,6 @@ import { Trupe } from "../utils/trupeUtils";
 
 export interface Clue {
   text: string;
-  type: 'suspect' | 'city';
   npcType?: 'librarian' | 'banker' | 'pilot' | 'merchant';
 }
 
@@ -22,49 +21,33 @@ const getNpcForPlace = (placeName: string): Clue['npcType'] => {
     return 'pilot';
   }
 
-  // Default NPC for Markets, Cinemas, etc.
   return 'merchant';
 };
 
 export const generateClue = (villain: Trupe, nextCity: LocationData, placeName: string): Clue => {
-  const isCityClue = Math.random() > 0.4; // 60% chance for city clues
   const npcType = getNpcForPlace(placeName);
+  const metadata = nextCity.metadata;
 
-  if (isCityClue) {
-    const metadata = nextCity.metadata;
-    const cityClueTypes = ['description', 'currency', 'flag', 'landmark'];
-    const selectedType = metadata 
-      ? cityClueTypes[Math.floor(Math.random() * cityClueTypes.length)]
-      : 'description';
+  const cityClues = [
+    `Eles mencionaram que precisavam trocar dinheiro por ${metadata?.currency || 'moeda local'}.`,
+    `Vi uma bandeira com as cores ${metadata?.flag || 'estrangeira'} no veículo de fuga.`,
+    `Eles estavam lendo um guia turístico sobre ${metadata?.landmark || 'um monumento famoso'}.`,
+    `O suspeito perguntou qual a distância até ${nextCity.name}.`
+  ];
 
-    let text = "";
-    switch (selectedType) {
-      case 'currency':
-        text = `"O suspeito trocou todo o seu dinheiro por ${metadata?.currency} antes de partir."`;
-        break;
-      case 'flag':
-        text = `"Eu vi uma bandeira com as cores ${metadata?.flag} nas malas do viajante."`;
-        break;
-      case 'landmark':
-        text = `"O viajante parecia muito interessado em visitar o ${metadata?.landmark}."`;
-        break;
-      default:
-        text = `"Fugiram para uma região assim: ${nextCity.description.substring(0, 60)}..."`;
-    }
+  const traitClues = [
+    `A pessoa tinha cabelos ${villain.cabelo.toLowerCase()}.`,
+    `Disseram que era ${villain.sexo === 'Feminino' ? 'uma mulher' : 'um homem'}.`,
+    `Vi que o(a) suspeito(a) estava praticando ${villain.hobby.toLowerCase()}.`,
+    `O(a) suspeito(a) tinha como característica: ${villain.caracteristica.toLowerCase()}.`
+  ];
 
-    return { text, type: 'city', npcType };
-  } else {
-    // Pista sobre o suspeito
-    const suspectAttrs = [
-      `tinha o cabelo ${villain.cabelo}`,
-      `disse que adora ${villain.hobby}`,
-      `usava ${villain.caracteristica}`,
-      `foi visto dirigindo um(a) ${villain.veiculo}`,
-    ];
-    const text = `"A pessoa que você procura ${suspectAttrs[Math.floor(Math.random() * suspectAttrs.length)]}."`;
-    
-    return { text, type: 'suspect', npcType };
-  }
+  const fullText = `${cityClues[Math.floor(Math.random() * cityClues.length)]} ${traitClues[Math.floor(Math.random() * traitClues.length)]}`;
+
+  return {
+    text: fullText,
+    npcType
+  };
 };
 
 export const filterTrupe = (allSuspects: Trupe[], filters: any): Trupe[] => {

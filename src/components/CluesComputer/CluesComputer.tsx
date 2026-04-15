@@ -155,7 +155,22 @@ const CluesComputer: React.FC<CluesComputerProps> = ({
                 </span>
               </ClueButton>
             ))}
-            <FilterButton onClick={handleFilter}>PESQUISAR</FilterButton>
+            <div style={{ display: 'flex', gap: '10px' }}>
+              <FilterButton onClick={handleFilter}>PESQUISAR</FilterButton>
+              <FilterButton 
+                onClick={() => {
+                  setSelectedClues({ Sexo: "", Hobby: "", Cabelo: "", Caracteristica: "", Veiculo: "" });
+                  setFilteredViloes(trupeiros);
+                  onFilterSuspects([]);
+                  setIsSuspectListUpdated(false);
+                  localStorage.removeItem("selectedClues");
+                  localStorage.removeItem("filteredViloes");
+                }}
+                style={{ backgroundColor: '#444', borderColor: '#666' }}
+              >
+                LIMPAR
+              </FilterButton>
+            </div>
 
             <SuspectsGallery>
               {filteredViloes.length > 0 ? (

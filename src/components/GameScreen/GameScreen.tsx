@@ -16,6 +16,7 @@ import { generateClue, Clue } from "../../services/clueService";
 import FlightTransition from "../FlightTransition/FlightTransition";
 import ArrestModal from "../ArrestFinale/ArrestModal";
 import * as rankUtils from "../../utils/rankUtils";
+import AudioManager from "../AudioManager/AudioManager";
 
 import {
   StyledGameScreen,
@@ -190,6 +191,10 @@ const GameScreen: React.FC = () => {
     setShowMapView(false);
     setShowSearchOptions(false);
     setShowCluesComputer(false);
+
+    // Limpar filtros do computador da Interpol
+    localStorage.removeItem("selectedClues");
+    localStorage.removeItem("filteredViloes");
 
     // reset intro so messages reflect new city
     setStep(0);
@@ -373,6 +378,8 @@ const GameScreen: React.FC = () => {
 
   const anyPanelOpen = showMapView || showSearchOptions || showCluesComputer;
 
+  const [isMuted, setIsMuted] = useState(false);
+
   return (
     <StyledGameScreen
       onClick={handleContinue}
@@ -380,9 +387,10 @@ const GameScreen: React.FC = () => {
       tabIndex={0}
     >
       <audio ref={audioRef} src="/typewriter-key.mp3" />
+      <AudioManager currentCity={currentLocation.name} isMuted={isMuted} />
 
       <ScreenWrapper>
-        <HeaderComponent />
+        <HeaderComponent isMuted={isMuted} onToggleSound={() => setIsMuted(!isMuted)} />
         <FlightTransition isVisible={isFlightVisible} destinationName={currentLocation.name} />
         <MainContentArea>
           {/* LEFT: typewriter intro — hides smoothly once complete */}

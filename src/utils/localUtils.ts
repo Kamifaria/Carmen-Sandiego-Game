@@ -2,9 +2,9 @@ export interface LocationData {
   name: string;
   image: string;
   description: string;
-  top: number;  
+  top: number;
   left: number;
-  metadata?: {
+  metadata: {
     currency: string;
     flag: string;
     landmark: string;
