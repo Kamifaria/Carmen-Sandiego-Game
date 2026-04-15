@@ -85,10 +85,11 @@ export const ClueButton = styled.button`
   .clue-option { color: #00ffcc; font-weight: bold; text-shadow: 0 0 5px rgba(0, 255, 204, 0.4); }
 
   @media (max-width: 768px) {
-    padding: 8px 12px;
-    font-size: 0.9rem;
-    flex-direction: column;
-    align-items: flex-start;
+    padding: 12px;
+    font-size: 0.95rem;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
   }
 `;
 
@@ -210,9 +211,10 @@ export const SuspectCard = styled.div<{ $isWarrant: boolean }>`
   }
 
   @media (max-width: 768px) {
-    width: 110px;
-    .photo { width: 90px; height: 90px; }
-    .name { font-size: 0.75rem; }
+    width: 45%;
+    min-width: 140px;
+    .photo { width: 100px; height: 100px; }
+    .name { font-size: 0.8rem; }
     .stamp { font-size: 0.8rem; top: 25px; }
   }
 `;

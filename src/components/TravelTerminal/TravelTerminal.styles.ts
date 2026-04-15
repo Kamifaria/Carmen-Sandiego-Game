@@ -42,6 +42,13 @@ export const TerminalHeader = styled.div`
     font-size: 0.8rem;
     color: #ffd700;
   }
+
+  @media (max-width: 480px) {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 5px;
+    h2 { font-size: 1.1rem; }
+  }
 `;
 
 export const ContentRow = styled.div`

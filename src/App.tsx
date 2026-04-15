@@ -1,4 +1,3 @@
-import './App.css';
 import React from 'react';
 import { Routes, Route } from 'react-router-dom';
 import Home from './components/Home/Home';
@@ -11,10 +10,12 @@ import { AuthProvider } from './services/AuthContext';
 
 import Lobby from './components/Lobby/Lobby';
 import CRTFilter from './components/CRTFilter/CRTFilter';
+import { GlobalStyles } from './styles/GlobalStyles';
 
 const App = () => {
   return (
     <AuthProvider>
+      <GlobalStyles />
       <CRTFilter>
         <Routes>
           <Route path="/" element={<Home />} />

@@ -100,6 +100,7 @@ export const MainContentArea = styled.div`
 
   @media (max-width: 768px) {
     flex-direction: column;
+    overflow-y: auto; /* Allow the stack to grow if needed */
   }
 `;
 
@@ -120,10 +121,10 @@ export const LeftColumn = styled.div<{ $isHidden?: boolean }>`
   overflow: hidden;
 
   @media (max-width: 768px) {
-    flex: ${({ $isHidden }) => ($isHidden ? "0 0 0px" : "1")};
+    flex: ${({ $isHidden }) => ($isHidden ? "0 0 0px" : "0 0 auto")};
     width: 100%;
-    min-height: ${({ $isHidden }) => ($isHidden ? "0px" : "180px")};
-    max-height: 250px;
+    height: ${({ $isHidden }) => ($isHidden ? "0px" : "auto")};
+    min-height: ${({ $isHidden }) => ($isHidden ? "0px" : "220px")};
     border-right: none;
     border-bottom: ${({ $isHidden }) => ($isHidden ? "0px" : "2px solid #2a5f6b")};
   }
@@ -449,35 +450,20 @@ export const WitnessWrapper = styled.div<{ isVisible: boolean }>`
   }
 `;
 
-export const WitnessPortrait = styled.div<{ $img: string }>`
+export const WitnessPortrait = styled.img`
   width: 150px;
   height: 150px;
   flex-shrink: 0;
-  background-image: url(${props => props.$img});
-  background-size: cover;
-  background-position: center;
+  object-fit: cover;
   border: 4px solid #1a4a5a;
   border-radius: 4px;
   margin-right: 20px;
   box-shadow: 0 0 10px rgba(0,0,0,0.5);
+  background-color: #000;
 
   @media (max-width: 600px) {
     margin-right: 0;
     margin-bottom: 15px;
-  }
-
-  &::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    background: repeating-linear-gradient(
-      0deg,
-      rgba(0, 0, 0, 0.1),
-      rgba(0, 0, 0, 0.1) 1px,
-      transparent 1px,
-      transparent 2px
-    );
-    pointer-events: none;
   }
 `;
 
@@ -487,6 +473,14 @@ export const WitnessText = styled.div`
   font-size: 1.1rem;
   color: #fff;
   line-height: 1.4;
+  max-height: 250px;
+  overflow-y: auto;
+  padding-right: 10px;
+
+  @media (max-width: 600px) {
+    font-size: 1rem;
+    max-height: 300px;
+  }
 
   span {
     display: block;

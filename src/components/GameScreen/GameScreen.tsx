@@ -14,6 +14,8 @@ import TravelTerminal from "../TravelTerminal/TravelTerminal";
 import { getDifficultySettings } from "../../utils/gameLogicUtils";
 import { generateClue, Clue } from "../../services/clueService";
 import FlightTransition from "../FlightTransition/FlightTransition";
+import ArrestModal from "../ArrestFinale/ArrestModal";
+import * as rankUtils from "../../utils/rankUtils";
 
 import {
   StyledGameScreen,
@@ -40,6 +42,9 @@ import {
   CloseWitnessButton,
 } from "./GameScreen.styles";
 
+import InterpolTerminal from "../InterpolTerminal/InterpolTerminal";
+import BootSequence from "../InterpolTerminal/BootSequence";
+
 // ─── Custom Typewriter ──────────────────────────────────────────────
 const TypewriterText: React.FC<{ text: string; onDone: () => void }> = ({ text, onDone }) => {
   const [displayed, setDisplayed] = useState("");
@@ -54,14 +59,13 @@ const TypewriterText: React.FC<{ text: string; onDone: () => void }> = ({ text, 
         clearInterval(t);
         onDone();
       }
-    }, 30);
+    }, 20); // Faster digital typing
     return () => clearInterval(t);
   }, [text, onDone]);
 
   return (
     <span>
       {displayed}
-      <span style={{ animation: "flicker 1s infinite" }}>|</span>
     </span>
   );
 };
@@ -98,6 +102,8 @@ const GameScreen: React.FC = () => {
   const [messagesToShow, setMessagesToShow] = useState<string[]>([]);
   const [readyForNext, setReadyForNext] = useState(true);
   const [introComplete, setIntroComplete] = useState(false);
+  const [isBooting, setIsBooting] = useState(true);
+  const [careerStats, setCareerStats] = useState(rankUtils.getCareerStats());
 
   // ── Game meta ──────────────────────────────────────────────────
   const [casesResolved, setCasesResolved] = useState(0);
@@ -129,11 +135,19 @@ const GameScreen: React.FC = () => {
   const [elapsedHours, setElapsedHours] = useState(0);
   const [issuedWarrant, setIssuedWarrant] = useState<string | null>(null);
   const [gameState, setGameState] = useState<"playing" | "won" | "lost">("playing");
+
+  useEffect(() => {
+    if (gameState === "won") {
+      const newStats = rankUtils.saveVictory();
+      setCareerStats(newStats);
+    }
+  }, [gameState]);
   const [bottomMessage, setBottomMessage] = useState("");
   const [currentClue, setCurrentClue] = useState<Clue | null>(null);
   const [isFlightVisible, setIsFlightVisible] = useState(false);
   const [currentWeather, setCurrentWeather] = useState<'clear' | 'rain' | 'snow'>('clear');
   const [availableDestinations, setAvailableDestinations] = useState<LocationData[]>([]);
+  const [capturedVillain, setCapturedVillain] = useState<Trupe | null>(null);
 
   // ── UI toggle state ────────────────────────────────────────────
   const [showMapView, setShowMapView] = useState(false);
@@ -255,6 +269,7 @@ const GameScreen: React.FC = () => {
           // confrontation
           if (issuedWarrant === villain.nome) {
             setGameState("won");
+            setCapturedVillain(villain);
             setBottomMessage(
               `🚨 ${villain.nome} preso(a)! Mandado válido confirmado. CASO ENCERRADO!`
             );
@@ -372,21 +387,27 @@ const GameScreen: React.FC = () => {
         <MainContentArea>
           {/* LEFT: typewriter intro — hides smoothly once complete */}
         <LeftColumn $isHidden={introComplete}>
-          <TypingArea>
-            <MessageContainer>
-              {messagesToShow.slice(0, -1).map((msg, i) => (
-                <TypingAreaItem key={i}>{msg}</TypingAreaItem>
-              ))}
-              {messagesToShow.length > 0 && (
-                <TypewriterText
-                  key={step.toString()}
-                  text={messagesToShow[messagesToShow.length - 1]}
-                  onDone={() => setReadyForNext(true)}
-                />
-              )}
-            </MessageContainer>
-            <TypewriterContainer isTyping={!readyForNext} />
-          </TypingArea>
+          <InterpolTerminal>
+            {isBooting ? (
+              <BootSequence onComplete={() => setIsBooting(false)} />
+            ) : (
+              <MessageContainer>
+                {messagesToShow.map((msg, i) => (
+                  <div key={i} style={{ marginBottom: '10px', fontSize: '0.9rem' }}>
+                    {i === messagesToShow.length - 1 ? (
+                      <TypewriterText
+                        key={step.toString()}
+                        text={msg}
+                        onDone={() => setReadyForNext(true)}
+                      />
+                    ) : (
+                      msg
+                    )}
+                  </div>
+                ))}
+              </MessageContainer>
+            )}
+          </InterpolTerminal>
         </LeftColumn>
 
         {/* RIGHT: main game area */}
@@ -437,7 +458,13 @@ const GameScreen: React.FC = () => {
 
           {/* NPC Witness Panel */}
           <WitnessWrapper isVisible={!!currentClue && showSearchOptions}>
-            <WitnessPortrait $img={`/assets/npcs/${currentClue?.npcType || 'merchant'}.png`} />
+            <WitnessPortrait 
+              src={`/assets/npcs/${currentClue?.npcType || 'merchant'}.png`} 
+              onError={(e) => {
+                (e.target as HTMLImageElement).src = '/assets/npcs/banker.png';
+              }}
+              alt="Testemunha"
+            />
             <WitnessText>
               <span>{
                 currentClue?.npcType === 'librarian' ? 'Bibliotecária' : 
@@ -484,12 +511,22 @@ const GameScreen: React.FC = () => {
           </BottomSection>
 
           {/* Game Over / Win overlay */}
-          {gameState !== "playing" && (
-            <GameOverlay type={gameState} onClick={e => e.stopPropagation()}>
-              <h1>{gameState === "won" ? "🎉 CASO RESOLVIDO!" : "💀 FIM DE JOGO"}</h1>
+          {gameState === "won" && capturedVillain && (
+            <ArrestModal
+              suspectName={capturedVillain.nome}
+              suspectImg={capturedVillain.imagem}
+              artifact={startedArtefact}
+              careerStats={careerStats}
+              onNextCase={handleRestart}
+            />
+          )}
+
+          {gameState === "lost" && (
+            <GameOverlay type="lost" onClick={e => e.stopPropagation()}>
+              <h1>💀 FIM DE JOGO</h1>
               <p>{bottomMessage}</p>
               <button onClick={e => { e.stopPropagation(); handleRestart(); }}>
-                {gameState === "won" ? "→ PRÓXIMO CASO" : "→ TENTAR NOVAMENTE"}
+                → TENTAR NOVAMENTE
               </button>
               <button 
                 onClick={e => { e.stopPropagation(); navigate("/lobby"); }}

@@ -9,9 +9,20 @@ export interface Clue {
 
 const getNpcForPlace = (placeName: string): Clue['npcType'] => {
   const name = placeName.toLowerCase();
-  if (name.includes('biblioteca') || name.includes('livraria')) return 'librarian';
-  if (name.includes('banco') || name.includes('financeiro')) return 'banker';
-  if (name.includes('aeroporto') || name.includes('porto')) return 'pilot';
+  
+  if (name.includes('biblioteca') || name.includes('livraria') || name.includes('museu') || name.includes('palácio')) {
+    return 'librarian';
+  }
+  
+  if (name.includes('banco') || name.includes('financeiro') || name.includes('bolsa')) {
+    return 'banker';
+  }
+  
+  if (name.includes('aeroporto') || name.includes('porto') || name.includes('terminal')) {
+    return 'pilot';
+  }
+
+  // Default NPC for Markets, Cinemas, etc.
   return 'merchant';
 };
 
