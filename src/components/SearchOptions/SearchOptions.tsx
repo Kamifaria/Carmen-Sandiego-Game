@@ -56,9 +56,7 @@ const getGroupByCountry = (country: string): string | undefined => {
   return undefined;
 };
 
-const handleClick = (placeName: string) => {
-  console.log(`Clicou em ${placeName}`);
-};
+
 
 const SearchOptions: React.FC<SearchOptionsProps> = ({ currentCountry, onSearch }) => {
   const [focusedIndex, setFocusedIndex] = useState<number>(0);

@@ -23,7 +23,7 @@ const AudioManager: React.FC<AudioManagerProps> = ({ currentCity, isMuted }) => 
       audioRef.current.src = getAudioPath(currentCity);
       audioRef.current.loop = true;
       if (!isMuted) {
-        audioRef.current.play().catch(() => console.log("Áudio indisponível. Adicione os arquivos em public/assets/sounds/"));
+        audioRef.current.play().catch(() => {});
       }
     }
   }, [currentCity, isMuted]);
